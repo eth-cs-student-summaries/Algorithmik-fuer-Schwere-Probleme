@@ -1,0 +1,73 @@
+\documentclass[paper=a4, parskip=half-]{scrartcl}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amssymb} % more icons/symbols
+\usepackage{hyperref} % for hyper links
+\usepackage{graphicx}
+\usepackage{enumitem} % for enumerations a), i)
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ left=20mm,
+ right=20mm,
+ top=20mm,
+ bottom=30mm,
+ }
+
+
+\title{Algorithmik für Schwere Probleme}
+\author{\texttt{thgoebel@ethz.ch}}
+\date{ETH Zürich, FS 2021}
+
+% Custom commands
+\newcommand{\setzeroone}{\lbrace 0, 1 \rbrace} % => {0,1} (Notice the missing $$)
+\newcommand{\binarystring}{\setzeroone^*}
+\newcommand{\horizontaldivider}{\begin{center} \line(1,0){350} \end{center}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Time}{\text{time}}
+
+
+\begin{document}
+
+\begin{titlepage}
+\maketitle
+\vspace{5cm}
+\thispagestyle{empty}
+
+
+\begin{abstract}
+This documents is a \textbf{short} summary for the course
+\textit{Algorithmik für Schwere Probleme} at ETH Zurich.
+It is intended as a document for quick lookup, e.g. during revision,
+and as such does not replace attending the lecture, reading the slides or reading a proper book.
+
+We do not guarantee correctness or completeness, nor is this document endorsed by the lecturers.
+Feel free to point out any erratas.
+\end{abstract}
+
+\end{titlepage}
+
+\tableofcontents
+\newpage
+%\listoffigures
+%\listoftables
+
+%Credits: images are generally taken from the lecture slides.
+\newpage
+
+\input{1-introduction}
+\newpage
+
+\input{2-pseudopolynomial-algorithms}
+\newpage
+
+\input{3-parameterized-algorithms}
+\newpage
+
+\end{document}
