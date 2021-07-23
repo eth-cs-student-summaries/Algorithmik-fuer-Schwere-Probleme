@@ -30,3 +30,19 @@ Lese am Ende den maximal erreichten Nutzen $k^*$ (und sein $T_{n, k^*}$) aus.
 Laufzeit: $ \bigO \big( |I|^2 \cdot Max-Int(I) \big) \quad$ da $|I|$ Iterationen und
 jeder Schritt in $\leq \sum_j^n c_j = |I| \cdot Max-Int(I)$.
 
+\paragraph{h-beschränktes Teilproblem}
+Sei $U$ ein Zahlproblem, $h: \N \mapsto \N$ monoton nicht-fallend.
+Das \emph{h-beschränkte Teilproblem von $U$ (h-value-bounded subproblem)} $Value(h)-U$
+ist das Teilproblem mit Eingaben $I$ für die gilt: $Max-Int(I) \leq h(|I|)$.
+
+\paragraph{Stark NP-schwer}
+Ein Zahlproblem $U$ heisst \emph{stark NP-schwer} falls ein Polynom $p$ existiert,
+so dass $Value(p)-U$ NP-schwer ist. \\
+In anderen Worten: $U$ ist stark NP-schwer wenn es auch dann NP-schwer ist wenn alle
+darin vorkommenden Zahlen ``klein'' sind.
+\\
+Beispiel: TSP. Generell jedes gewichtete Graph-Optimierungsproblem wenn das ungewichtete Pendant NP-schwer ist (hier: Hamiltonkreisproblem HCP).
+
+\underline{Theorem:}
+Sei $U$ stark NP-schwer. Dann existiert kein pseudopolynomieller Algorithmus für $U$.%
+\footnote{Wie immer unter der Annahme dass $P \neq NP$.}

@@ -1,8 +1,81 @@
-
 \section{Parametrisierte Algorithmen}
+
+\paragraph{Idee}
+Verallgemeinerung von pseudopolynomiellen Algorithmen:
+Laufzeit hängt von der Eingabegrösse nur polynomiell ab, aber darf extrem gross werden in der Grösse eines Parameters.
+Partitionierung in Problemklassen entlang des Parameters.
+
+\paragraph{Parametrisierung}
+Sei $U$ ein Entscheidungsproblem, $L$ die Sprache der Eingaben.
+$\Par: L \mapsto \N$ ist eine \emph{Parametrisierung} von $U$ falls gilt:
+\begin{enumerate}[label=(\roman*)]
+    \item $\Par$ ist in Polynomzeit berechenbar
+    \item Für unendlich viele $k \in \N$ ist die Parameter-$k$-Menge für $U$
+    $$ Set_U(k) := \{ I \in L \st \Par(I) = k \} $$ unendlich.
+    Dies stellt sich dass $\Par$ nichttrivial ist, z.B. nicht etwa $\Par(I) = |I|$.
+    In anderen Worten, für jeden Parameterwert soll es beliebig viele Probleminstanzen geben.
+\end{enumerate}
+Ein Algorithmus $\A$ heisst \emph{$\Par$-paremetrisierter Polynomzeit-Algorithmus} für $U$ falls gilt:
+\begin{enumerate}[label=(\roman*)]
+    \item $\A$ löst $U$
+    \item $ \exists \text{ Polynom } p \; \exists \text{ (berechenbare) Funktion } f : \N \mapsto \N$
+    so dass $\forall I \in L$:
+    $$\Time_\A(I) \leq f \big( \Par(I) \big) \cdot p(|I|) $$
+\end{enumerate}
+Dann heisst $U$ \emph{fixed-parameter-tractable bezüglich $\Par$}.
+$\A$ heisst auch \emph{fpt-Algorithmus für $U$ bezüglich $\Par$} und läuft in fpt-Zeit.
+
+\underline{Beispiel:}
+Sei $U$ ein Zahlproblem und sei $Val(I) := \max \{ |x_i| \}$.
+Es gilt $Max-Int(I) \leq 2^{Val(I)}$ und ist $Val$ eine Parametrisierung von $U$.
+
+\paragraph{Ansätze}
+Die \emph{Standard-Parametrisierung} wählt als Parameter die Grösse der gewünschten Lösung (z.B. Grösse des VCs).
+Die \emph{Strukturelle Parametrisierung} wählt eine bestimmte Eigenschaft der Eingabe (z.B. maximaler Knotengrad).
+Andere Ansätze betrachten wir im Folgenden.
 
 
 \subsection{Kernbildung}
+
+\paragraph{Idee}
+Polynomielles Preprocessing, Datenreduktion, um die Instanz auf einen \emph{Kern} zu verkleinern,
+der in seiner Grösse nur noch vom Parameter abhängt.
+Diesen Kern dann mit bekannten Algorithmen (oder brute force) lösen.
+
+\paragraph{Kernbildung (kernelisation)}
+Sei $(U, \Par)$ ein parametrisiertes Entscheidungsproblem, $L$ die Sprache der JA-Instanzen von $U$.
+Ein \emph{Kernbildungs-Algorithmus} für $(U, \Par)$ ist ein Polynomzeit-Algorithmus $\A$ der jede Eingabe $(I, k)$
+in eine neue Eingabe $(I', k')$ (den \emph{Kern (kernel)}) transformiert so dass:
+\begin{enumerate}[label=(\roman*)]
+    \item $ I \in L \iff I' \in L $ (Korrektheit)
+    \item $ |I'| + k' \leq g(k) $ für $g : \N \mapsto \N$ (neue Grösse nur abhängig vom alten Parameterwert $k$)
+\end{enumerate}
+
+\paragraph{Beispiel: VCP} \mbox{} \\
+\underline{Reduktionsregel:}
+Sei $S \subseteq V$ ein VC von $G$ so dass $|S| \leq k$. Dann enthält $S$ alle Knoten mit $\deg_G(v) > k$ (warum?).
+Dann gilt für ein solches $v$:
+$$ (G, k) \in VCP \iff (G-\{v\}, k-1) \in VCP $$
+Zusätzlich entferne alle isolierten Knoten mit $\deg_G(v) = 0$ (sie decken keine Kanten ab).
+
+Zu zeigen: wenn die Regel nicht mehr anwendbar ist, dann hat der verbleibende Graph $G'$ entweder kein vertex cover,
+oder aber er ist ``klein genug'' (nur noch anhängig von $k$), also ein Kern.
+
+\underline{Beobachtung:}
+Sei $G$ ein Graph ohne isolierten Knoten, mit einem vertex cover der Grösse $m$ und mit $\max \deg_G(v) \leq k$.
+Dann gilt $|V| \leq m \cdot (k+1)$ (warum?).%
+\footnote{Falls $|V| > k \cdot (k+1)$, dann wir wissen dass $ I \notin L$ und können NEIN ausgeben.}
+
+\underline{Theorem:}
+Diese Reduktionsregeln berechnen einen Kern der Grösse $\bigO (k^2)$ in Zeit $\bigO (k \cdot n)$.
+
+\underline{Parametrisierter Algorithmus:}
+Berechne einen Kern $(G', k')$. Wenn der Kern zu gross ist, geben NEIN aus.
+Andernfalls prüfe durch vollständige Suche ob ein VC mit $|S'| \leq k'$ existiert.
+
+\underline{Theorem:}
+Dies ist ein fpt-Algorithmus bzgl. der Standard-Parametrisierung. Die Laufzeit beträgt
+$\bigO (k \cdot n + k^{2k+2}) \subseteq \bigO (k^{2k+2} \cdot n)$.
 
 
 \subsection{Suchbäume}
