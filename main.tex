@@ -7,6 +7,7 @@
 \usepackage{hyperref} % for hyper links
 \usepackage{graphicx}
 \usepackage{enumitem} % for enumerations a), i)
+\usepackage{tcolorbox} % for colorful boxes
 
 \usepackage{geometry}
  \geometry{
@@ -34,6 +35,17 @@
 \newcommand{\Par}{\text{par}}
 \newcommand{\st}{\; | \;}
 \newcommand{\cl}{\; : \;}
+
+% Defines the box to contain the main takeaways from a section that you should be able to explain
+\newenvironment{takeaway}{
+    \begin{tcolorbox}[colback=red!5!white, colframe=red!65!white, title=Konzepte]
+    \begin{itemize}[leftmargin=1em]
+    \setlength{\itemsep}{-0.2em}
+}
+{
+    \end{itemize}
+    \end{tcolorbox}
+}
 
 
 \begin{document}
