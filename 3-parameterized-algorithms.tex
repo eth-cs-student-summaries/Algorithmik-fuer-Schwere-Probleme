@@ -4,6 +4,8 @@
     \item Parametrisierter Algorithmus, fpt
     \item Standard-Parametrisierung
     \item Kernbildung
+    \item (Sichere) Datenreduktionsregel
+    \item Kronenzerlegung
 \end{takeaway}
 
 \paragraph{Idee}
@@ -57,6 +59,8 @@ in eine neue Eingabe $(I', k')$ (den \emph{Kern (kernel)}) transformiert so dass
     \item $ |I'| + k' \leq g(k) $ für $g : \N \mapsto \N$ (neue Grösse nur abhängig vom alten Parameterwert $k$)
 \end{enumerate}
 
+Eine \emph{Reduktionsregel} von $\A$ heisst \emph{sicher}, wenn sie (i) erfüllt.
+
 \paragraph{Beispiel: VCP} \mbox{} \\
 \underline{Reduktionsregel:}
 Sei $S \subseteq V$ ein VC von $G$ so dass $|S| \leq k$. Dann enthält $S$ alle Knoten mit $\deg_G(v) > k$ (warum?).
@@ -82,6 +86,68 @@ Andernfalls prüfe durch vollständige Suche ob ein VC mit $|S'| \leq k'$ existi
 \underline{Theorem:}
 Dies ist ein fpt-Algorithmus bzgl. der Standard-Parametrisierung. Die Laufzeit beträgt
 $\bigO (k \cdot n + k^{2k+2}) \subseteq \bigO (k^{2k+2} \cdot n)$.
+
+\paragraph{Theorem}
+Sei $(U, \Par)$ ein parametrisiertes Entscheidungsproblem. \\
+Ein fpt-Algorithmus für $(U, \Par)$ existiert $\iff$ Ein Kernbildungsalgorithmus für $(U, \Par)$ existiert.
+
+\paragraph{Edge Clique Cover Problem ECCP} \mbox{} \\
+Eingabe: ungerichteter Graph $G=(V,E)$, $k \leq \N$ \\
+Ausgabe: JA falls $k$ Cliquen $C_1, \dots, C_k$ existieren, so dass $E = \bigcup_{i=1}^k E(C_i)$, sonst NEIN.
+
+\underline{Reduktionsregeln:}
+\begin{enumerate}[label=(\roman*)]
+    \item $(G, k) \xrightarrow{\text{isolierter Knoten } u} (G-\{ u \}, k)$
+    \item $(G, k) \xrightarrow{\text{isolierte Kante } e=\{u,v\} } (G-\{ u,v \}, k-1)$
+    \item $(G, k) \xrightarrow{\{u,v\} \in E \text{ s.t. } \{u,v\} \subsetneq N[u] = N[v] } (G-\{ u \}, k)$ \\
+    $N[u]$ ist die \emph{geschlossene Nachbarschaft} von $u$, also alle benachbarten Knoten und $u$ selbst.
+\end{enumerate}
+
+\underline{Theorem:} Das ECCP hat einen Kern mit $\leq 2^k$ Knoten.
+
+
+\subsubsection{Kronenzerlegung}
+
+Ziel: statt einem quadratischen Kern suchen wir einen linearen Kern für das VCP. \\
+Bisher genutzte Strukturen zur Reduktion: hoher Knotengrad, gleiche geschlossene Nachbarschaft.
+
+\paragraph{Kronenzerlegung (crown decomposition)}
+Die \emph{Kronenzerlegung} von $G=(V,E)$ ist eine Partitionierung $V = C \cup H \cup B$ so dass:
+\begin{enumerate}[label=(\roman*)]
+    \item $C \neq \emptyset$ ist ein independent set in $G$
+    \item $N(C) = H$ (keine Kanten zwischen $C$ und $B$)
+    \item Die Kanten zwischen $C$ und $H$ enthalten ein Matching $M$ mit $|M| = |H|$ ($M$ \emph{saturiert} $H$).
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+	\includegraphics[scale=0.4]{images/crown-decomp.png}
+    \caption{Kronenzerlegung: crown, head, body (Quelle: Vorlesung)}
+    \label{fig:crown-decomp}
+\end{figure}
+
+\paragraph{Satz von König}
+Sei $G$ ein ungerichteter bipartiter Graph, sei $M$ ein Matching maximaler Kardinalität,
+sei $S$ ein vertex cover minimaler Kardinalität.
+Dann gilt $|M| = |S|$.
+
+\underline{Theorem:} $M$ und $S$ können in Polynomzeit berechnet werden.
+
+\paragraph{Lemma}
+Sei $G$ ungerichtet, ohne isolierte Knoten, mit $|V| \geq 3k+1$.
+Dann existiert ein Polynomzeitalgorithmus der
+\begin{enumerate}[label=(\roman*)]
+    \item entweder eine Kronenzerlegung berechnet
+    \item oder ein Matching $M$ mit $|M| \geq k+1$ findet.
+\end{enumerate}
+Beweis siehe Buch, Kapitel 6.2, Seite 145f.
+
+\paragraph{Reduktion für VCP} \mbox{} \\
+\underline{Lemma:}
+Sei $G$ ein Graph mit Kronenzerlegung $V = C \cup H \cup B$ und sei $k \in \N$. Dann gilt: \\
+$G$ hat ein vertex cover der Grösse $k$ $\iff$ $G - (C \cup H)$ hat ein vertex cover der Grösse $k - |H|$.
+
+\underline{Theorem:} Ein Kernbildungsalgorithmus mit obiger Reduktionsregel findet einen Kern mit $\leq 3k$ Knoten.
 
 
 \subsection{Suchbäume}
