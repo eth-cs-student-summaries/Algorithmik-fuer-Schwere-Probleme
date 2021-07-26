@@ -6,6 +6,9 @@
     \item Kernbildung
     \item (Sichere) Datenreduktionsregel
     \item Kronenzerlegung
+    \item Tiefenbeschränkte Suchbäume
+    \item Iterative Kompression
+    \item Probleme: Edge Clique Cover, Cluster Editing
 \end{takeaway}
 
 \paragraph{Idee}
@@ -93,7 +96,9 @@ Ein fpt-Algorithmus für $(U, \Par)$ existiert $\iff$ Ein Kernbildungsalgorithmu
 
 \paragraph{Edge Clique Cover Problem ECCP} \mbox{} \\
 Eingabe: ungerichteter Graph $G=(V,E)$, $k \leq \N$ \\
-Ausgabe: JA falls $k$ Cliquen $C_1, \dots, C_k$ existieren, so dass $E = \bigcup_{i=1}^k E(C_i)$, sonst NEIN.
+Ausgabe: JA falls $k$ Cliquen\footnote{Clique: Knotenmenge so dass alle Knoten paarweise miteinander verbunden sind,
+d.h. einen vollständigen Teilgraphen bilden.}
+$C_1, \dots, C_k$ existieren, so dass $E = \bigcup_{i=1}^k E(C_i)$ (jede Kante ist in mind. einer Clique), sonst NEIN.
 
 \underline{Reduktionsregeln:}
 \begin{enumerate}[label=(\roman*)]
@@ -114,14 +119,14 @@ Bisher genutzte Strukturen zur Reduktion: hoher Knotengrad, gleiche geschlossene
 \paragraph{Kronenzerlegung (crown decomposition)}
 Die \emph{Kronenzerlegung} von $G=(V,E)$ ist eine Partitionierung $V = C \cup H \cup B$ so dass:
 \begin{enumerate}[label=(\roman*)]
-    \item $C \neq \emptyset$ ist ein independent set in $G$
+    \item $C \neq \emptyset$ ist ein independent set\footnote{Eine Menge von Knoten zwischen denen es keine Kante gibt.} in $G$
     \item $N(C) = H$ (keine Kanten zwischen $C$ und $B$)
     \item Die Kanten zwischen $C$ und $H$ enthalten ein Matching $M$ mit $|M| = |H|$ ($M$ \emph{saturiert} $H$).
 \end{enumerate}
 
 \begin{figure}[h]
     \centering
-	\includegraphics[scale=0.4]{images/crown-decomp.png}
+    \includegraphics[scale=0.3]{images/crown-decomp.png}
     \caption{Kronenzerlegung: crown, head, body (Quelle: Vorlesung)}
     \label{fig:crown-decomp}
 \end{figure}
@@ -145,14 +150,68 @@ Beweis siehe Buch, Kapitel 6.2, Seite 145f.
 \paragraph{Reduktion für VCP} \mbox{} \\
 \underline{Lemma:}
 Sei $G$ ein Graph mit Kronenzerlegung $V = C \cup H \cup B$ und sei $k \in \N$. Dann gilt: \\
-$G$ hat ein vertex cover der Grösse $k$ $\iff$ $G - (C \cup H)$ hat ein vertex cover der Grösse $k - |H|$.
+$$ (G, k) \in VCP \iff \Big( G - (C \cup H), k - |H| \Big) \in VCP $$
 
 \underline{Theorem:} Ein Kernbildungsalgorithmus mit obiger Reduktionsregel findet einen Kern mit $\leq 3k$ Knoten.
 
 
-\subsection{Suchbäume}
+\subsection{Tiefenbeschränkte Suchbäume}
+
+\paragraph{Idee}
+Vollständige Suche über alle möglichen Lösungen, aber mit Suchbaumtiefe beschränkt im Parameter.
+
+\paragraph{Beispiel: VCP}
+Beobachtung: in jedem vertex cover $S$ gilt $\forall e = \{v_1, v_2\} : v_1 \in S \vee v_2 \in S$.
+Daher verzweige von $(G, k)$ nach $(G-\{v_1\}, k-1)$ und $(G-\{v_2\}, k-1)$.
+In den Blättern $(G_j, 1)$ ist das VCP trivial.
+Dieser Suchbaum hat Tiefe $k$ und $2^{k-1}$ Blätter.
+Gesamtlaufzeit: $\bigO (2^k \cdot n)$.
+
+\paragraph{Cluster Editing Problem CEP} \mbox{} \\
+Eingabe: Graph $G = (V, E)$, $k \in \N$ \\
+Ausgabe: JA falls durch Löschen/Einfügen von $\leq k$ Kanten $G$ in eine Vereinigung (union) von disjunkten Cliquen
+(= jeder connected component ist eine Clique) transformiert werden kann, sonst NEIN. \\
+Bekannterweise NP-schwer.
+
+\underline{Theorem:}
+Graph $G$ besteht aus disjunkten Cliquen \\
+$\iff$ $G$ enthält \emph{keinen} Pfad aus drei Knoten\footnote{In eine Clique bilden drei Knoten einen Kreis, keinen Pfad.}\\
+$\iff$ es gibt \emph{keine} paarweise verschiedenen $u, v, w \in V : \{u,v\}, \{v,w\} \in E \wedge \{u,w\} \notin E$
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.35]{images/cluster-editing.png}
+    \caption{Cluster Editing Situation (Quelle: Vorlesung)}
+    \label{fig:cluster-editing}
+\end{figure}
+
+\underline{Algorithmus:}
+Teste ob $G$ bereits eine Vereinigung disjunkter Cliquen ist, oder ob $k=0$.
+Wenn nicht, finde $u,v,w \in V$ mit obiger Bedingung.
+Rekursiere auf
+$G_1 = \big(V, E   -  \{ \{u,v\} \} \big)$,
+$G_2 = \big(V, E   -  \{ \{v,w\} \} \big)$,
+$G_3 = \big(V, E \cup \{ \{u,w\} \} \big)$.
+Laufzeit\footnote{Die Rekursionsformel $T(k) = 3 \cdot T(k-1)$ gibt $\bigO (3^k)$ rekursive Aufrufe.}:
+$\bigO (n^3 \cdot 3^k)$.
 
 
 \subsection{Iterative Kompression}
 
+\paragraph{Idee}
+Gegeben ein Kompressionsalgorithmus der aus einer (bzgl. dem Schwellwert) etwas zu grossen Lösung eine kleinere,
+gültige Lösung in fpt-Zeit berechnet.
+Iteriere: Instanz vergrössern, komprimieren, usw.:
+\\
+\begin{align*}
+(I_0, k_0) & \text{ mit Lösung } S_0^*, |S_0^*| \leq k_0 \\
+\xrightarrow{\text{Instanz vergrössern}}
+(I_1, k_1) & \text{ mit Lösung } S_1,   |S_1|   > k_1 \\
+\xrightarrow{\text{komprimieren}}
+(I_1, k_1) & \text{ mit Lösung } S_1^*, |S_1^*| \leq k_1 \\
+& \dots
+\end{align*}
+
+\paragraph{Beispiel: VCP}
+Siehe Buch, Algorithmus 6.6, Seite 151ff.
 
