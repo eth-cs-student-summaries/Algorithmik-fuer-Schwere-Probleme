@@ -8,6 +8,7 @@
     \item Kronenzerlegung
     \item Tiefenbeschränkte Suchbäume
     \item Iterative Kompression
+    \item Baumzerlegung, Baumweite; bramble, bramble number
     \item Probleme: Edge Clique Cover, Cluster Editing, Steinerbaum
 \end{takeaway}
 
@@ -284,6 +285,88 @@ Gebe $g(S)$ aus.
 \\
 Laufzeit: $\bigO (n^2 \log n + n \cdot m + (k^2 + )\; 3^k \cdot n + 2^k \cdot n^2)$
 
+
+\subsection{Baumzerlegung}
+
+\paragraph{Motivation}
+Viele schwere Graphprobleme sind auf Bäumen einfach.
+Z.B. im VCP Reduktionsregel durch Entfernen von Blättern und ihren Nachbarn, und Hinzufügen der Nachbarn ins VC.
+\\
+Ziel: ``Baumähnlichkeit'' von Graphen beschreiben.
+
+\paragraph{Definition (Baumzerlegung)}
+Eine \emph{Baumzerlegung (tree decomposition)} von $G$ ist ein Paar $D = (T, B)$
+wobei $T = (V_T, E_T)$ ein Baum ist.
+Sei $I$ eine Indexmenge, die die Knoten aus $V_T$ aufzählt.%
+\footnote{Dies erlaubt es uns getrennt über die Knotenmenge $V_T$ des Baums $T$ und über die bags zu sprechen.}
+Sei $B$ eine Label-Funktion $B : I \mapsto 2^V$ die jedem Index $i$ von $V_T$ eine Knotenmenge $X_i \subseteq V$
+(einen \emph{bag}) zuordnet, so dass:
+\begin{enumerate}[label=(\roman*)]
+    \item $ \bigcup_{i \in I} X_i = V $ (alle Knoten kommen vor)
+    \item $ \forall \{u,v\} \in E \; \exists i \in I : u, v \in X_i $ (alle Kanten in einem bag)
+    \item $ \forall v \in V $ bilden die bags $X_i$ mit $v \in X_i$ einen Teilbaum von $T$ (Zusammenhang, Lokalität)
+\end{enumerate}
+
+Die \emph{Weite} von $D$ ist $\max \{|X_i|\} - 1$.\footnote{Das $-1$ ist kosmetisch damit echte Bäume eine Baumweite von 1 haben.} \\
+Die \emph{Baumweite} $\tw(G)$ von $G$ ist die minimale Weite über alle möglichen Baumzerlegungen.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{images/tree-decomp.png}
+    \caption{Graph $G$ (links) und seine Baumzerlegung $D$ (rechts) (Quelle: Vorlesung)}
+    \label{fig:tree-decomp}
+\end{figure}
+
+\paragraph{Beobachtungen}
+\begin{itemize}
+    \item Sei $G$ ein Baum. Dann ist $\tw(G) = 1$.
+    \item Sei $G$ ein Kreis. Dann ist $\tw(G) = 2$.
+    \item Sei $G$ ein Graph, $v \in V, e \in E$.
+    Dann ist jede Baumzerlegung $D$ für $G$ auch eine Baumzerlegung für $G-e$.
+    Auch kann $D$ in eine Baumzerlegung $D'$ für $G-v$ transformiert werden mit gleicher oder kleinerer Weite
+    (z.B. durch Entfernen von $v$ aus $D$).
+    \\
+    $\implies$ Die Baumweite ist monoton: zusätzliche Knoten/Kanten verringern nicht die Baumweite.
+    \item Sei $G$ ein Graph, sei $C \subseteq V$ eine Clique der Grösse $|C| = k$.
+    Dann gilt $\tw(G) \geq k-1$ (und es existiert ein bag, der alle Knoten der Clique enthält).
+    \\
+    $\implies$ grosse Cliquen $\Rightarrow$ grosse Baumweite.
+    ABER kleine Cliquen $\nRightarrow$ kleine Baumweite (z.B. $l \times l$-Gitter-Graph).
+    \\
+    $\implies$ Konzept der Clique kein genügendes Modell für den Zusammenhang
+    (und damit der Baumähnlichkeit) eines Graphen.
+    Verallgemeinerung: statt Knoten die sich gegenseitig berühren betrachten wir
+    \underline{Mengen von} Knoten die sich gegenseitig berühren.
+\end{itemize}
+
+\paragraph{Definition (bramble)}
+Sei $G$ ein Graph, sei $\B = \{B_1, \dots, B_k\}$ mit $B_i \subseteq V$
+Wir sagen dass $B_i, B_j$ sich \emph{berühren (touch)}, falls
+$B_i \cap B_j \neq \emptyset$ oder $\exists \{x_i, x_j\} \in E : x_i \in B_i \wedge x_j \in B_j$.
+\\
+Wenn alle $B_i$ sich paarweise berühren, dann heisst $\B$ \emph{bramble} (``Dornen-/Brombeergestrüpp'') von $G$.
+
+$C \subseteq V$ heisst \emph{Überdeckung (cover)} von $\B$, falls $C \cap B_i \neq \emptyset$ für alle $i$.
+\\
+Die \emph{Ordnung (order)} von $\B$ ist die Grösse einer minimalen Überdeckung von $\B$.
+\\
+Die \emph{bramble number} $\bn(G)$ von $G$ ist die maximale Ordnung eines bramble von $G$.
+
+\underline{Beispiel:}
+In einem $k \times k$-Gitter-Graph sei ein ``Kreuz'' $C_{i,j}$ die Vereinigung von Reihe $i$ und Spalte $j$.
+Dann ist $\B = \{C_{i,j}\}$ ein bramble von $G$ der Ordnung $k$ und jeder Reihe und jede Spalte ist
+eine Überdeckung von $\B$.
+
+\paragraph{Theoreme}
+\begin{itemize}
+    \item Sei $G$ ein Graph. Dann gilt $\bn(G) = \tw(G) + 1$. \\
+    $\longrightarrow$ Die bramble number beschreibt die Grösse eines grössten bags in einer optimalen Baumzerlegung.
+    \item Die Bestimmung der Baumweite eines Graphen ist NP-schwer.
+    (?Ebenso die Konstruktion einer beliebigen Baumzerlegung?) \\
+    $\longrightarrow$ Problem: das Parameter eines parametrisierten Algorithmus' sollte in Polynomzeit berechenbar sein!
+    \item Sei $G$ ein Graph mit $\tw(G)=k$. Dann kann man eine Baumzerlegung der Grösse/Weite $\leq 5k$
+    in Zeit $2^{\bigO(k)} \cdot n$ berechnen.
+\end{itemize}
 
 
 
