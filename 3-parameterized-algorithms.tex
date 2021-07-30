@@ -8,7 +8,7 @@
     \item Kronenzerlegung
     \item Tiefenbeschränkte Suchbäume
     \item Iterative Kompression
-    \item Probleme: Edge Clique Cover, Cluster Editing
+    \item Probleme: Edge Clique Cover, Cluster Editing, Steinerbaum
 \end{takeaway}
 
 \paragraph{Idee}
@@ -80,7 +80,9 @@ Dann gilt $|V| \leq m \cdot (k+1)$ (warum?).%
 \footnote{Falls $|V| > k \cdot (k+1)$, dann wir wissen dass $ I \notin L$ und können NEIN ausgeben.}
 
 \underline{Theorem:}
-Diese Reduktionsregeln berechnen einen Kern der Grösse $\bigO (k^2)$ in Zeit $\bigO (k \cdot n)$.
+Diese Reduktionsregeln berechnen einen Kern der Grösse $\bigO (k^2)$ in Zeit%
+\footnote{Unter der Annahme dass die Knotengrade bereits gegeben sind, ansonsten $\bigO (k \cdot n + m)$.}
+$\bigO (k \cdot n)$.
 
 \underline{Parametrisierter Algorithmus:}
 Berechne einen Kern $(G', k')$. Wenn der Kern zu gross ist, geben NEIN aus.
@@ -212,6 +214,76 @@ Iteriere: Instanz vergrössern, komprimieren, usw.:
 & \dots
 \end{align*}
 
+\paragraph{Disjoint Vertex Cover Problem DVCP} \mbox{} \\
+Eingabe: $G=(V,E)$, vertex cover $W$, $k \in \N$ \\
+Ausgabe: JA falls es ein vertex cover $S$ gibt mit $|S| \leq k \wedge S \cap W = \emptyset$ sonst NEIN.
+
+\underline{Lemma:}
+Jede DVCP-Instanz $(G, W, k)$ kann in Zeit $\bigO (|V|^2)$ gelöst werden (warum?\footnote{
+Es reicht zu prüfen ob $N(W)$ ein vertex cover ist}).
+
 \paragraph{Beispiel: VCP}
-Siehe Buch, Algorithmus 6.6, Seite 151ff.
+Idee: füge einen Knoten nach dem anderen hinzu.
+Starte mit $S_1^* = \emptyset$. In jeder Iteration setzte $S_i \leftarrow S_{i-1}^* \cup \{v_i\}$ und benutze
+$\A_{compress}(G_i, S_i, k)$ um entweder $S_i^*$ zu finden oder NEIN.
+Details siehe Buch, Algorithmen 6.6+6.7, Seite 151ff.
+
+\underline{Kompression:} Idee: probiere alle möglichen intersections $X$ des gesuchten VCs mit $S$ aus: \\
+If $|S| \leq k$ return $S$.
+For all $X \subseteq S$ with $|X| \leq k$ do:
+solve DVCP on $(G-X, S-X, k-|X|)$
+-- if YES return $X \cup N(S-X)$.
+\\
+Laufzeit: $\bigO (2^k \cdot n^2)$ also gesamt: $\bigO (2^k \cdot n^3)$.
+
+
+\subsection{Dynamische Programmierung für den Steinerbaum}
+
+\paragraph{Steinerbaum-Problem STP} \mbox{} \\
+Eingabe: $G=(V,E)$ mit Kantenkosten $c : E \mapsto \N$, \emph{Terminalen} $S \subseteq V$,
+\emph{Nicht-Terminale/Steiner-Knoten} $N = V-S$ \\
+Lösungen: Teilbaum $T$ von $G$ (\emph{``Steinerbaum''}) der alle Knoten aus $S$ enthält (und einige aus $N$) \\
+Kosten: $cost(T, (G,c,S)) = c(T) = \sum_{e\in E(T)} c(e) = $ Summe der Kanten = ``Grösse'' des Baums \\
+Ziel: $\min$
+
+\paragraph{DP-Ansatz}
+Annahme: alle Blätter sind Terminale (warum?).
+
+Beobachtung: falls $Y \subseteq N$ gegeben ist dann ist das STP einfach: berechne MST von $S \cup Y$. \\
+$\implies$ k-parametrisierter Algorithmus mit $k = |N|$.
+
+Uninteressant, wir schauen im Folgenden ein DP mit dem Parameter $k = |S|$ an.
+Für alle $X \subseteq S$ und alle $v \in V-X$ berechne zwei Steinerbäume:
+\begin{enumerate}
+    \item Auf Instanz $(G, c, X)$ einen Steinerbaum mit minimalen Kosten $g(X)$.
+    \item Auf Instanz $(G, c, X \cup \{v\})$ einen Steinerbaum mit minimalen Kosten $g_{in}(X, v)$ so dass $v$ ein innerer Knoten ist (d.h. $\deg(v) \geq 2$).
+\end{enumerate}
+
+\paragraph{Lemma}
+Es gilt:
+\begin{equation}
+g_{in}(X, v) = \min_{\emptyset \neq X' \subset X} \left\{
+    g(X' \cup \{v\}) + g \left( (X-X') \cup \{v\} \right)
+\right\}
+\end{equation}
+\begin{equation}
+g(X \cup \{v\}) = \min \left\{
+    \min_{w \in X} \left\{ p(v,w) + g(X) \right\},
+    \min_{w \in V-X} \left\{ p(v,w) + g_{in}(X,w) \right\}
+\right\}
+\end{equation}
+wobei $p(v,w)$ die minimalen Kosten eines Pfades von $v$ nach $w$ in $G$ sind.
+Beweis siehe Buch Kapitel 6.5, Seite 159ff.
+
+\paragraph{Dreyfus-Wagner Algorithmus}
+Eingabe $(G, c, S)$.
+Berechne $p(v, w)$ für alle $v,w \in V$.
+Initialisiere $g(\{x,y\}) := p(x,y)$ für alle $x,y \in S$.
+Für alle $X \subseteq S$ mit $|X| \in [2, |S|-1]$ und alle $v \in V-X$ berechne $g_{in}(X, v)$ und $g(X \cup \{v\})$.
+Gebe $g(S)$ aus.
+\\
+Laufzeit: $\bigO (n^2 \log n + n \cdot m + (k^2 + )\; 3^k \cdot n + 2^k \cdot n^2)$
+
+
+
 
