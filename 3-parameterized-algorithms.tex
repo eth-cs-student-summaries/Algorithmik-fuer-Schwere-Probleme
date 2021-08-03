@@ -9,7 +9,7 @@
     \item Tiefenbeschränkte Suchbäume
     \item Iterative Kompression
     \item Baumzerlegung, Baumweite; bramble, bramble number
-    \item Probleme: Edge Clique Cover, Cluster Editing, Steinerbaum
+    \item Probleme: Edge Clique Cover, Cluster Editing, Steinerbaum, VCP via Baumweite
 \end{takeaway}
 
 \paragraph{Idee}
@@ -290,9 +290,9 @@ Laufzeit: $\bigO (n^2 \log n + n \cdot m + (k^2 + )\; 3^k \cdot n + 2^k \cdot n^
 
 \paragraph{Motivation}
 Viele schwere Graphprobleme sind auf Bäumen einfach.
-Z.B. im VCP Reduktionsregel durch Entfernen von Blättern und ihren Nachbarn, und Hinzufügen der Nachbarn ins VC.
+Z.B. Reduktionsregel für VCP: entferne Blätter und ihre Nachbarn, füge Nachbarn ins VC hinzu.
 \\
-Ziel: ``Baumähnlichkeit'' von Graphen beschreiben.
+Ziel: ``Baumähnlichkeit'' von Graphen beschreiben und ``Baum-Algorithmenvariante'' anwenden.
 
 \paragraph{Definition (Baumzerlegung)}
 Eine \emph{Baumzerlegung (tree decomposition)} von $G$ ist ein Paar $D = (T, B)$
@@ -354,19 +354,116 @@ Die \emph{bramble number} $\bn(G)$ von $G$ ist die maximale Ordnung eines brambl
 
 \underline{Beispiel:}
 In einem $k \times k$-Gitter-Graph sei ein ``Kreuz'' $C_{i,j}$ die Vereinigung von Reihe $i$ und Spalte $j$.
-Dann ist $\B = \{C_{i,j}\}$ ein bramble von $G$ der Ordnung $k$ und jeder Reihe und jede Spalte ist
-eine Überdeckung von $\B$.
+Dann ist $\B = \{C_{i,j} \st 1 \leq i,j \leq k \}$ ein bramble von $G$ der Ordnung $k$
+und jede Reihe und jede Spalte ist eine Überdeckung von $\B$.
 
 \paragraph{Theoreme}
 \begin{itemize}
     \item Sei $G$ ein Graph. Dann gilt $\bn(G) = \tw(G) + 1$. \\
-    $\longrightarrow$ Die bramble number beschreibt die Grösse eines grössten bags in einer optimalen Baumzerlegung.
-    \item Die Bestimmung der Baumweite eines Graphen ist NP-schwer.
-    (?Ebenso die Konstruktion einer beliebigen Baumzerlegung?) \\
+    $\longrightarrow$ Die bramble number beschreibt die Grösse des grössten bags in einer optimalen Baumzerlegung.
+    D.h. sie bietet eine untere Schranke für die Weite einer beliebigen Baumzerlegung.
+    \item Die Konstruktion einer Baumzerlegung und Bestimmung der Baumweite sind NP-schwer. \\
     $\longrightarrow$ Problem: das Parameter eines parametrisierten Algorithmus' sollte in Polynomzeit berechenbar sein!
-    \item Sei $G$ ein Graph mit $\tw(G)=k$. Dann kann man eine Baumzerlegung der Grösse/Weite $\leq 5k$
+    \item Sei $G$ ein Graph mit $\tw(G)=k$. Dann kann man eine Baumzerlegung $D$ der Grösse/Weite $\leq 5k$
     in Zeit $2^{\bigO(k)} \cdot n$ berechnen.
 \end{itemize}
+
+\subsubsection{Beispiel: VCP parametrisiert mit Baumweite}
+
+\paragraph{Idee}
+Löse VCP in den bags und setze die Gesamtlösung aus den Teillösungen anhand der Baumstruktur bottom-up zusammen.
+
+\paragraph{Definition}
+Eine Baumzerlegung heisst \emph{einfach (simple)}, falls $\forall i, j \in I \cl X_i \nsubseteq X_j$.
+
+\paragraph{Lemma}
+Jede Baumzerlegung lässt sich umwandeln in eine einfache Baumzerlegung.
+
+\underline{Beweis:}
+falls solche $X_i, X_j$ existieren, dann müssen sie auf einem Pfad liegen.
+O.B.d.A. ist $X_i$ Nachbar von $X_j$. Kontrahiere beide.
+Die Weite bleibt erhalten.
+Machbar in Zeit $\bigO(\tw(G) \cdot n)$.\footnote{Wenn die Ausgangszerlegung $D$ wie im Theorem oben gebildet wurde,
+impliziert dies dass $D$ $\bigO(n)$ viele bags hat.}
+
+\paragraph{Lemma}
+Sei $G$ ein Graph.
+Dann existiert eine Baumzerlegung $D=(T,B)$ von $G$ mit (optimaler) Weite $\tw(G)$ so dass $|V_T| \leq |V|$. \\
+$\longrightarrow$ Es gibt wenige bags, und diese sind klein.
+
+\underline{Beweis:}
+O.B.d.A. hat $D$ Baumweite $\tw(G)$ und ist einfach. Wähle ein $r \in T$ als Wurzel.
+$\forall v \in V$ sei $\high(v)$ der höchste Knoten in $V_T$ dessen bag $v$ enthält.
+$\high(v)$ ist eindeutig (warum?).
+Behauptung: $\forall X_i \exists v \in V \cl \high(v) = X_i$.
+Fall nicht, gilt entweder $i = r$, aber dann ist $X_r = \emptyset$.
+Oder aber $X_i$ hat einen parent $X_j$, und da es kein eindeutiges $v$ gibt für $X_i$ muss $X_i \subseteq X_j$ gelten.
+Beide Fälle sind ein Widerspruch zur Annahme dass $D$ einfach ist.
+Also hat jeder bag mind. ein $v$ an höchster Stelle, ergo muss $|V_T| \leq |V|$ gelten.
+
+\paragraph{Notation}
+Wurzel $R$, Orientierung von $R$ zu den Blättern.
+Teilbaum $T_X$ mit Wurzel $X$.
+Induzierter Teilgraph $G[T_X]$ von $G$ mit all den Knoten die in einem bag aus $T_X$ sind.
+
+\paragraph{Definition}
+Sei $G$ ein Graph, sei $X \subseteq Y \subseteq V $, seien $C_X, C_Y$ vertex cover für $G[X], G[Y]$.
+$C_Y$ \emph{erweitert (extends)} $C_X$, falls $C_X \subseteq C_Y$ \underline{und} $C_Y \cap X = C_X$
+(d.h. $C_Y$ stimmt auf $X$ mit $C_X$ überein).
+
+\paragraph{Theorem}
+Sei $G$ ein Graph und sei $D$ eine einfache Baumzerlegung von $G$ der Weite $k$.\footnote{$k = \tw(G)$ muss nicht gelten!}
+Dann lässt sich ein optimaler VC für $G$ berechnen in Zeit $\bigO (2^k \cdot k \cdot n)$.
+
+\underline{Beweis:} Konstruktiv.
+Ziel: verwalte eine Tabelle, die für jeden bag $X$ alle optimalen VCs für $G[T_X]$ enthält -- diese lassen sich
+zu einem optimalen VC für $G$ erweitern.
+\begin{itemize}
+    \item[1)] Initialisierung:
+    Für alle bags $X$ berechne alle zulässigen VCs für $G[X]$
+    und definiere $w_X : 2^X \mapsto \N \cup \{\infty\}$ für alle $C \subseteq X$ wie folgt:
+    $$ w_X (C) = \begin{cases}
+    |C| & \text{ if $C$ is a VC for $G[X]$} \\
+    \infty & \text{ otherwise}
+    \end{cases}$$
+    D.h. $w_X$ speichert die Grösse aller VC-Kandidaten für $G[X]$.
+    \item[2)] Bottom-up-Durchlauf von $T$:
+    Für jeden Knoten $Y$ merge die Information $w_X$ aus jedem seiner Kinder $X$ in $w_Y$ hinein.
+    Sobald alle Kinder abgearbeitet sind enthält $w_Y$ die Grösse aller VC-Kandidaten für $G[T_Y]$.
+
+    Merge-Schritt:
+    Für alle $C_Y \subseteq Y$, sei $Z = X \cap Y$ und sei $C_Z := (C_Y \cap Z) \subseteq Z$
+    (also $C_Y$ erweitert $C_Z$). Dann berechne:
+    $$
+    w_Y (C_Y) \quad = \quad w_Y (C_Y)
+    \quad + \quad \min \{ w_X (C_X) \st C_X \subseteq X \text{ extends } C_Z \} \quad - \quad |C_Z|
+    $$
+    Beispiel siehe Buch Kapitel 6.6, Seite 173.
+\end{itemize}
+
+\underline{Beobachtung:} Jeder Knoten der in $T_X$ aber nicht in $X$ vorkommt, kommt nicht ausserhalb von $T_X$ vor
+(wegen Eigenschaft 3 der Baumzerlegung).
+Dadurch bleibt die Tabelle klein, da wir für alle abgehandelten ``unteren'' Knoten den optimalen VC bereits kennen.
+
+\underline{Laufzeit:}
+\begin{itemize}
+    \item[1)] Initialisierung: $2^{k+1}$ Teilmengen pro bag, jede in amortisiert%
+    \footnote{Naiv $\bigO (k^2)$ da wir alle Kanten in $G[X]$ auf coverage testen müssen.
+    Besser: iteriere über Teilmengen via Gray-Code, so dass sich immer nur ein Knoten ändert,
+    d.h. wir nur $\leq k$ Kanten testen müssen.}
+    $\bigO (k)$ testbar ob sie ein VC ist.
+    $\leq n$ bags (da einfache Zerlegung).
+    $\implies \bigO (2^k \cdot k \cdot n)$
+    \item[2)] Mergen von $X$ in Vorgänger $Y$:
+    Sortiere $w_x$-Tabelle bzgl. Ordnung auf $Z=X \cap Y$ in $\bigO (2^k \cdot \log 2^k)$.
+    Finde Minimum für alle $C_Z$ in $\bigO(2^k)$ (da Tabelle sortiert).
+    Für jedes $C_Y \subseteq Y$ finde passendes $C_Z$ in $w_x$-Tabelle in $\bigO(\log 2^k)$ dank binärer Suche.
+    $\leq n$ merges.
+    $\implies \bigO (2^k \cdot k \cdot n)$
+\end{itemize}
+
+\paragraph{Korollar}
+Das VCP ist fpt bzgl. $\tw(G)$.
 
 
 
