@@ -9,6 +9,7 @@
     \item Tiefenbeschränkte Suchbäume
     \item Iterative Kompression
     \item Baumzerlegung, Baumweite; bramble, bramble number
+    \item Klasse W[1]
     \item Probleme: Edge Clique Cover, Cluster Editing, Steinerbaum, VCP via Baumweite
 \end{takeaway}
 
@@ -465,5 +466,55 @@ Dadurch bleibt die Tabelle klein, da wir für alle abgehandelten ``unteren'' Kno
 \paragraph{Korollar}
 Das VCP ist fpt bzgl. $\tw(G)$.
 
+\paragraph{[Ausblick] Theorem}
+Sei $(G, k)$ eine VCP-Instanz, so dass $G=(V,E)$ planar ist und $|V|=n$.
+Dann kann das VCP auf $G$ in subexponentieller Zeit $2^{\bigO (\sqrt{k})} \cdot n$ gelöst werden.
+
+\underline{Beweisidee:}
+Berechne einen VC-Kern der Grösse $\bigO (k)$ (insbesondere bleibt der Graph planar).
+Ein planarer Graph kann mit Separatoren der Grösse $\bigO (\sqrt{k})$ in Teile der Grösse
+$\bigO (\sqrt{k})$ zerlegt werden.
+Dann gilt $\tw(G) \in \bigO (\sqrt{k})$ und wir können eine Baumzerlegung mit Weite $\bigO (\sqrt{k})$ finden.
+Wende dann den $\tw(G)$-parametrisierten Algorithmus an.
 
 
+\subsection{Grenzen der Parametrisierbarkeit}
+
+\paragraph{Ziel}
+Zeige, dass es Probleme gibt, die keine fpt-Algorithmen erlauben (unter komplexitätstheoretischen Annahmen).
+
+\paragraph{Definition}
+Das parametrisierte Problem $(U_1, \Par_1)$ lässt sich auf $(U_2, \Par_2)$ reduzieren mit
+\emph{parametrisierter Standardreduktion}, falls es einen Algorithmus gibt, der in fpt-Zeit
+Instanzen $(I_1, k)$ in $(I_2, k')$ umwandelt, JA-Instanzen erhält, und $k'$ nur von $k$ abhängt (nicht von $|I_1|$).
+
+\paragraph{Theorem}
+Falls $(U_2, \Par_2)$ fpt ist und eine parametrisierte Reduktion von $(U_1, \Par_1)$ auf $(U_2, \Par_2)$ existiert,
+dann ist auch $(U_1, \Par_1)$ fpt.
+
+\paragraph{Definitionen}
+\begin{itemize}
+    \item Das \emph{gewichtete (weighted) 2-SAT Problem (W2SAT)} ist ein parametrisiertes Problem: \\
+    Eingabe: 2-KNF Formel $F$, $k \in \N$ \\
+    Ausgabe: JA, falls es eine erfüllende Belegung für $F$ mit Gewicht\footnote{Gewicht := Anzahl auf
+    1 gesetzter Variablen} genau $k$ gibt. \\
+    Parametrisierung: Gewicht $k$
+    \item Die Klasse \emph{W[1]} enthält alle parametrisierten Probleme, die sich auf W2SAT parametrisiert
+    reduzieren lassen (c.f. Klasse NP).%
+    \footnote{Der Name W[1] ist historisch bedingt, die Klasse ist ursprünglich auch nicht via W2SAT definiert.}
+    \item Problem $U$ ist \emph{W[1]-schwer}, falls sich W2SAT auf $U$ reduzieren lässt.
+    \item Problem $U$ ist \emph{W[1]-vollständig}, falls es in W[1] liegt und W[1]-schwer ist.
+    \item Die Klasse \emph{FPT} enthält alle parametrisierten Probleme, für die ein fpt-Algorithmus existiert (c.f. Klasse P).
+\end{itemize}
+
+\paragraph{Theorem}
+Falls W[1] = FPT, dann kann 3-SAT auf Eingabe $F$ mit $n$ Variablen in Zeit $2^{o(n)} \cdot |F|^{\bigO(1)}$
+gelöst werden.
+
+$\longrightarrow$ Schwierigkeit von W[1] steht in direkter Verbindung mit der subexponentieller Lösbarkeit von 3-SAT.
+Allerdings: die Bedingung dass ein solcher Algorithmus nicht existiert (\emph{Exponential-Zeit-Hypothese ETH})
+ist stärker als P $\neq$ NP (bzw. 3-SAT $\notin$ P).
+D.h. W[1]-Vollständigkeit ist schwächer als NP-Vollständigkeit.
+
+\paragraph{Theorem}
+Das Independent-Set-Problem ist bzgl. Standardparameter W[1]-vollständig.

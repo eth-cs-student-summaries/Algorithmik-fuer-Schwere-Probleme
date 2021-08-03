@@ -1,0 +1,74 @@
+\section{Exakte Exponentialzeit Algorithmen}
+
+\begin{takeaway}
+    \item $\bigOstar$-Notation
+    \item Branching-Algorithmen: 3-SAT
+\end{takeaway}
+
+\paragraph{Motivation}
+Entwerfe Algorithmen die zwar exponentiell, aber dennoch schneller als vollständige Suche sind.
+Insbesondere in Zeit $c^n$ für $c < 2$ (z.B. $2^{\sqrt{n}} \approx 1.41^n$) anstelle von $2^n$.
+
+\paragraph{$\bigOstar$-Notation}
+Idee: so wie wir in $\bigO$-Notation konstanten Faktoren weglassen, lassen wir in $\bigOstar$-Notation
+polynomielle Vorfaktoren weg (da der exponentielle Faktor dominiert).
+
+Seien $f,g : \N \mapsto \R^+$. Dann gilt $f(n) \in \bigOstar(g(n))$, falls ein Polynom $p : \N \mapsto \R^+$
+existiert, so dass $f(n) \in \bigO(p(n) \cdot g(n))$.
+
+
+\subsection{Branching-Algorithmen}
+
+\paragraph{Idee}
+Instanz der Grösse $n$ aufteilen in konstant viele kleinere Teilinstanzen der Grösse $n-d$, für eine Konstante $d$.
+Ähnlich divide-and-conquer.
+
+
+\subsubsection{Beispiel: 3-SAT}
+
+Annahme: O.B.d.A. hat jede Klausel Literale von paarweise verschiedenen Variablen und alle Klauseln sind
+paarweise verschieden, dank polynomiellem preprocessing.
+Dann gilt $|\Phi| \in \bigO(n^3)$.
+
+\paragraph{Notation}
+Sei $\Phi$ eine Formel in 3-KNF über Variablen $X$, sei $x \in X$, $\alpha \in \setzeroone$.
+$\Phi[x=\alpha]$ beschreibt die Formel in 3-KNF, die aus $\Phi$ entsteht indem man den Wert $x=\alpha$ einsetzt
+und vereinfacht.
+
+\paragraph{Trivialer Ansatz}
+Wähle eine Variable $x$, berechne $\Phi[x=0]$ und $\Phi[x=1]$,
+merge ($\Phi$ satisfiable $\iff$ $\Phi[x=0] \text{ satisfiable } \vee \Phi[x=1]$ satisfiable).
+Zeit: $T(n) = 2 \cdot T(n-1) + \bigO(n) \implies T(n) \in \bigOstar(2^n) \implies$ keine Verbesserung,
+probiert nur alle Belegungen aus.
+
+\paragraph{Branch-3SAT / Monien-Speckenmeyer Algorithmus}
+\begin{enumerate}
+    \item Falls $\Phi = \emptyset$ return JA
+    \item Wähle Klausel $F \in  \Phi$ von minimaler Länge
+    \item Falls $F = \emptyset$ return NEIN
+    \item Falls $F = (l)$, rufe Branch-3SAT($\Phi[l=1]$) auf
+    \item Falls $F = (l_1 \vee l_2)$, rufe Branch-3SAT($\Phi[l_1=1]$) und Branch-3SAT($\Phi[l_1=0, l_2=1]$) auf
+    \item Falls $F = (l_1 \vee l_2 \vee l_3)$, rufe Branch-3SAT($\Phi[l_1=1]$) und
+    Branch-3SAT($\Phi[l_1=0, l_2=1]$) und Branch-3SAT($\Phi[l_1=0, l_2=0, l_3=1]$) auf
+    \item return JA falls einer der rekursiven Aufrufe JA returned, sonst NEIN
+\end{enumerate}
+
+\paragraph{Theorem}
+Branch-3SAT löst 3-SAT in Zeit $\bigOstar (1.8393^n)$ für alle Formeln über $n$ boolesche Variablen.
+
+\underline{Laufzeit:}
+\begin{align*}
+T(n) &\leq T(n-1) + T(n-2) + T(n-3) + \bigO(n) \\
+T(0) &= T(1) = T(2) = \bigO(n)
+\end{align*}
+Nehme $T(n) = \alpha^n$ an, forme um nach $\alpha^3 - \alpha^2 - \alpha - 1 = 0$,
+finde reale Nullstelle mit $\alpha \in [1,2)$.
+
+
+
+
+
+
+
+
+
