@@ -2,7 +2,7 @@
 
 \begin{takeaway}
     \item $\bigOstar$-Notation
-    \item Branching-Algorithmen: 3-SAT
+    \item Branching-Algorithmen: 3-SAT, Max-IS
 \end{takeaway}
 
 \paragraph{Motivation}
@@ -63,6 +63,53 @@ T(0) &= T(1) = T(2) = \bigO(n)
 \end{align*}
 Nehme $T(n) = \alpha^n$ an, forme um nach $\alpha^3 - \alpha^2 - \alpha - 1 = 0$,
 finde reale Nullstelle mit $\alpha \in [1,2)$.
+
+
+\subsubsection{Beispiel: Max-IS}
+
+\paragraph{Maximum Independent Set Problem Max-IS}
+\footnote{Recall: maximal == nicht erweiterbar. maximum == grösstes mögliches.} \\
+Eingabe: $G=(V,E)$ \\
+Lösungen: $\M(G) = \{ S \subseteq \M \st \{ u,v \} \notin E \text{ for all } u,v \in S, u \neq v \}$ \\
+Kosten: $cost(S, G) = |S|$ \\
+Ziel: $\max$
+
+\paragraph{Algorithmus: Branch-Max-IS}
+\begin{enumerate}
+    \item if $V = \emptyset$: return $\emptyset$
+    \item let $v \leftarrow \min_{u \in V} \deg_G(u)$
+    \item let $N[v] = \{ u_1, \dots, u_k \}$ be the \emph{closed} neighbourhood%
+    \footnote{Oft nehmen wir o.B.d.A. an dass $u_1 := v$.} of $v$
+    \item return the largest set from the family $\{ \{u_i\} \cup \text{Branch-Max-IS}(G-N[u_i]) \st i \in \{1,\dots,k\} \}$
+\end{enumerate}
+
+\paragraph{Theorem}
+Branch-Max-IS löst Max-IS in Zeit $\bigOstar (3^{n/3})  \subseteq \bigOstar (1.4423^n)$.
+
+\underline{Korrektheit:} Per Konstruktion (wegen Beobachtung dass $\forall v \in V$ mindestens ein $u \in N[v]$ in der optimalen, maximum Lösung enthalten sein muss).
+
+\underline{Laufzeit:}
+Ziel: beschränke Anzahl Knoten des Rekursionsbaumes. Es gilt:
+$$ T(G) \leq 1 + T(G-N[v]) + \sum_{i=2}^k T(G-N[u_i]) $$
+$$ T(n) = \max_{\substack{ G=(V,E) \\ |V|=n}} T(G) $$
+%
+Ausserdem gilt Monotonie $T(n) \leq T(n+1)$ und $T(0) = 1$. \\
+Sei $\delta_{min}(G)$ der minimale Grad in $G$. Es gilt:
+%
+\begin{align*}
+T(G) & \leq 1 + T(n - \delta_G(v) - 1) + \sum_{i=2}^k T(n - \delta_G(u_i) - 1) \\
+     & \overset{(1)}{\leq} 1 + T(n - \delta_{min}(G) - 1) + \delta_{min}(G) \cdot T(n - \delta_{min}(G) - 1) \\
+     & = 1 + (1 + \delta_{min}(G)) \cdot T(n - (\delta_{min}(G) + 1)) \\
+     & \leq 1 + \max_{1 \leq s \leq n} s \cdot T(n - s) \\
+T(n) & \overset{(2)}{\leq} 1 + \max_{1 \leq s \leq n} s \cdot T(n - s) \\
+\end{align*}
+wobei (1) aus der Monotonie folgt.
+(2) können wir schreiben, da die rechte Seite nicht mehr von einem bestimmten Graphen $G$ abhängt,
+sondern nur noch von der Grösse der Eingabe.
+
+Auflösen dieser letzten Ungleichung siehe Buch Kapitel 5.2, Seite 109f.
+
+
 
 
 
