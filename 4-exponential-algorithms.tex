@@ -3,6 +3,7 @@
 \begin{takeaway}
     \item $\bigOstar$-Notation
     \item Branching-Algorithmen: 3-SAT, Max-IS
+    \item Dynamische Programmierung: TSP/Held-Karp, Graph Coloring
 \end{takeaway}
 
 \paragraph{Motivation}
@@ -110,11 +111,81 @@ sondern nur noch von der Grösse der Eingabe.
 Auflösen dieser letzten Ungleichung siehe Buch Kapitel 5.2, Seite 109f.
 
 
+\subsection{Dynamische Programmierung}
 
+\paragraph{Travelling Salesman Problem TSP} \mbox{} \\
+Eingabe: (O.B.d.A. vollständiger) Graph $G=(V,E)$, Kostenfunktion $c : E \mapsto \N$ \\
+Ausgabe: Hamiltonkreis $H$ in $G$ \\
+Kosten: $cost(H, G) = \sum_{e \in H} c(e) $ \\
+Ziel: $\min$
 
+Problem: $\bigO(n!) = \bigOstar (2^{n \log n})$ viele mögliche Lösungen
 
+\paragraph{Dyn-Prog-TSP / Held-Karp Algorithmus}
+{ % space for util command
+\newcommand{\vtwon}{\{v_2, \dots, v_n\}}
+Für alle $S \subseteq \vtwon$ und jeden Knoten $x \in S$ berechne $l(S, x)$ als die minimalen Kosten
+eines Pfades der in $v_1$ startet, in $x \in S$ endet und genau alle Knoten aus $S$ je einmal besucht.
 
+\begin{enumerate}
+    \item Initialisierung: $ l(\{v_i\}, v_i) \leftarrow c(\{v_1, v_i\})$ für alle $i \in \{2, \dots n\}$
+    \item Für alle $j \in \{2, \dots n-1\}$, für alle $S \subseteq \vtwon$ mit $|S|=j$,
+    für alle $x \in S$ berechne:
+    $$ l(S, x) \leftarrow \min_{y \in (S-\{x\})} \{ l(S-\{x\},y) + c(\{y,x\}) \} $$
+    \item Finde Lösung: $$ l_{min} \leftarrow \min_{v_i \in \vtwon} \{ l(\vtwon,v_i) + c(\{v_i,v_1\}) \} $$
+    Return $l_{min}$.
+\end{enumerate}
+}
 
+\paragraph{Theorem}
+Held-Karp löst das TSP in Zeit $\bigOstar (2^n)$.
+
+\underline{Beweis:}
+Korrektheit trivial.
+Schritte 1 und 3 in $\bigO(n)$.
+Schritt 2: $\bigO(2^n)$ viele Teilmengen $S$, für jede wählen wir $x,y$ $\implies \bigO(n^2 \cdot 2^n)$.
+
+\paragraph{Graph Coloring Problem (Graphfärbung)}
+Sei $G$ ein ungerichtet, ungewichteter Graph und $k \in \N$.
+Eine \emph{k-Färbung (k-coloring)} von $G$ ist eine Funktion $c : V \mapsto \{1, \dots, k\}$ so dass
+$$ \{x,y\} \in E \implies c(x) \neq c(y) $$
+Die Menge $C_i := \{ x \in V \st c(x) = i \}$ heisst i-te \emph{color class} von $c$.
+Die \emph{chromatische Zahl (chromatic number)} $\chi(G)$ von $G$ ist das kleinste $k$ so dass $G$ eine $k$-Färbung besitzt.
+
+Eingabe: $G=(V,E)$ \\
+Ausgabe: $\chi(G)$
+
+Bruteforce: $\bigOstar(n^n)$ da $\chi(G) \leq n$
+
+\paragraph{Algorithmus: Dyn-Prog-Coloring}
+Beobachtungen:
+1) Jeder Farbklasse ist ein independent set in $G$.
+2) Wenn $C_i$ kein maximales IS ist, dann existiert ein $x \in V-C_i$ dass zu $i$ umgefärbt werden kann.
+
+\begin{enumerate}
+    \item Initialisierung: $\chi(\emptyset) \leftarrow 0$
+    \item Für alle $i \in \{1, \dots, n\}$, für alle $X \subseteq V$ mit $|X| = i$ berechne:
+    $$ \chi(X) \leftarrow 1 + \min \{ \chi(X-I) \st I \text{ ist ein maximales IS in } G[X] \} $$
+    Return $\chi(G) \leftarrow \chi(V)$
+\end{enumerate}
+
+\paragraph{Theorem}
+Dyn-Prog-Coloring löst das Graphfärbungsproblem in Zeit $\bigOstar(2.4423^n)$.
+
+\underline{Beweis:}
+Verwende Variante von Branch-Max-IS\footnote{Betrachtet geschlossene Nachbarschaft aller Knoten, nicht nur
+die von minimalem Grad, und gibt alle maximalen IS zurück (nicht nur das grösste).} um in $\bigOstar(3^{i/3})$ alle maximalen IS der Grösse $i$ zu finden.
+Insgesamt:
+$$ \bigOstar \left(\sum_{i=1}^n \binom{n}{i} \cdot 3^{i/3} \textcolor{gray}{\cdot 1^{(n-i)/3}} \right)
+= \bigOstar \left( \left(1+3^{1/3} \right)^n \right) \in \bigOstar \left(2.4423^n \right) $$
+unter Anwendung des Binomischen Satzes.
+
+\paragraph{Definitionen (Perfekte Matchings)}
+\begin{itemize}
+    \item Sei $G$ ein Graph. Ein \emph{perfektes Matching} in $G$ ist eine Menge $\{e_1, \dots e_{n/2}\} \subseteq E$
+    paarweiser disjunkter Kanten, die ganz $V$ abdecken: $e_1 \cup \dots \cup e_{n/2} = V$.
+    \item Die Anzahl perfekter Matchings in $G$ bezeichnen wir mit $\Pm(G)$.
+\end{itemize}
 
 
 
