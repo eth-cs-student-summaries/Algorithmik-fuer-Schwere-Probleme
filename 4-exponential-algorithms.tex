@@ -4,6 +4,7 @@
     \item $\bigOstar$-Notation
     \item Branching-Algorithmen: 3-SAT, Max-IS
     \item Dynamische Programmierung: TSP/Held-Karp, Graph Coloring
+    \item Measure-and-Conquer
 \end{takeaway}
 
 \paragraph{Motivation}
@@ -180,13 +181,123 @@ $$ \bigOstar \left(\sum_{i=1}^n \binom{n}{i} \cdot 3^{i/3} \textcolor{gray}{\cdo
 = \bigOstar \left( \left(1+3^{1/3} \right)^n \right) \in \bigOstar \left(2.4423^n \right) $$
 unter Anwendung des Binomischen Satzes.
 
-\paragraph{Definitionen (Perfekte Matchings)}
+
+\subsection{Measure-and-Conquer}
+
+\paragraph{Idee}
+Ähnlich zu Branching-Algorithmen: Teile das Problem in Teilinstanzen auf.
+Bei der Analyse betrachte aber nicht eine Rekursionsgleichung in der Eingabegrösse, sondern analysiere
+eine andere Grösse.
+D.h. entwerfe keine neuen Algorithmen, sondern verbessere die Analyse.
+
+\paragraph{Definition}
+Es gibt zwei Arten von Regeln, die wir auf die Eingabe anwenden:
+\begin{enumerate}
+    \item \emph{(data) reduction rules}, welche eine Instanz zu einer äquivalenten, kleineren Instanz reduzieren.
+    \item \emph{branching rules}, welche eine Instanz in mehrere kleinere Teilinstanzen aufteilen.
+\end{enumerate}
+
+Eine branching rule reduziert eine Instanz der Grösse $n$ in $l$ viele Teilinstanzen der Grössen $n-k_1, \dots, n-k_l$.
+$(k_1, \dots, k_l) \in \mathbb{Q}^{+^l}$ heisst \emph{branching vector} der branching rule.
+
+\paragraph{Lemma (branching factor)}
+Sei $\A$ ein Algorithmus mit \underline{einer} branching rule mit branching vector $(k_1, \dots, k_l)$.
+Nehme an, dass die Anwendung einer Regel (und das Testen ihrer Anwendbarkeit!) in Polynomzeit möglich ist.
+Beobachte ausserdem, dass Datenreduktionsregeln nur polynomiell oft angewendet werden können.
+
+Dann ist die Laufzeit von $\A$ auf eine Eingabe der Grösse $n$ in Zeit $\bigOstar(\alpha^n)$;
+dabei ist $\alpha$ die eindeutige positive Nullstelle des Polynoms
+$$ x^n - x^{n-k_1} - x^{n-k_2} - \dots - x^{n-k_l} $$
+
+$\alpha$ heisst \emph{branching factor} der branching rule, auch notiert als $\alpha(k_1, \dots, k_l)$.
+
+Falls $\A$ mehrere branching rules verwendet, schätze jede Regel einzeln ab und nehme den worst case als obere Schranke.
+
+\paragraph{Beobachtung}
+\begin{enumerate}[label=(\alph*)]
+    \item $ \alpha(k_1, \dots, k_l) = \alpha(k_{i_1}, \dots, k_{i_l}) $ für jede Permutation $(i_1, \dots, i_l)$
+    von $(1, \dots, l)$.
+    \item $ \alpha(k_1, k_2, \dots, k_l) > \alpha(k_1', k_2, \dots, k_l)$ für jedes $k_1' > k_1$
+    \item $ \alpha(k_1, k_2) > \alpha(k_1+s, k_2-s)$
+\end{enumerate}
+Intuitiv: Der branching factor wird kleiner wenn ein Element des branching vectors grösser wird,
+oder wenn der Vektor ``balancierter'' wird.
+Ein kleinerer branching factor ist besser.
+
+\paragraph{Algorithmus: Max-Degree-Branch-Max-IS}
+Ähnlich Branch-Max-IS, aber branched auf Knoten von maximalen (anstatt minimalem) Grad.
+{
+\newcommand{\algo}{\textsc{Max-Degree-Branch-Max-IS}}
+\begin{enumerate}
+    \item If $\exists v \in V \cl \deg_G(v) \leq 1$: return $ 1+ \algo(G-N[v]) $
+    \item If $\exists v \in V \cl \deg_G(v) \geq 3$: let $v$ be a vertex of maximum degree. return \\
+    $ \max \{ 1 + \algo(G-N[v]), \algo(G-v) \} $
+    \item If $\exists v \in V \cl \deg_G(v) = 2$: compute a max IS in polynomial time on the remaining trees+cycles
+\end{enumerate}
+}
+
+\paragraph{Theorem}
+Max-Degree-Branch-Max-IS löst Max-IS in Zeit $\bigOstar(1.3803^n)$
+
+\underline{Beweis:}
+Korrektheit: offensichtlich (Schritt 1: sichere Datenreduktionsregel). \\
+Laufzeit: der branching vector in Schritt 2 ist $(1, 1+\deg_G(v))$ bzw. im worst case $(1,4)$ (siehe Beobachtung). \\
+$\implies$ branching factor $\alpha(1,4) < 1.3803$.
+
+\paragraph{Measure-and-Conquer Analyse}
+Idee: Die branching-rule-Analyse betrachtet alle Knoten, aber ignoriert dass Knoten mit kleinem Grad ``nicht so schlimm''
+sind für die Laufzeit.
+Seien $n_{\leq 1}, n_2, n_{\geq 3}$ die Anzahl Knoten von entsprechendem Grad.
+Definiere eine Gewichtsfunktion (arbiträr):
+$$
+w(v) := \begin{cases}
+0 & \text{if} \deg_G(v) \leq 1 \\
+\frac{1}{2} & \text{if} \deg_G(v) = 2 \\
+1 & \text{if} \deg_G(v) \geq 3 \\
+\end{cases}
+$$
+
+Das Gesamtgewicht des Graphen ist dann:
+$$ w(G) = \sum_{v \in V} w(v) = n_{\leq 1} \cdot 0 + n_2 \cdot \frac{1}{2} + n_{\geq 3} \cdot 1
+= \frac{1}{2} \cdot n_2 + n_{\geq 3} $$
+
+In den neuen Teilinstanzen betrachte nun die Gewichts-Verringerung (anstatt der Knotenanzahl-Verringerung).
+Sei $G_{in} = G-N[v]$ und $G_{out} = G-v$.
+Seien $w_{in}, w_{out}$ die Werte, um die sich die Gewichte verringern:
+$$ w(G_{in}) \leq w(G) - w_{in} \qquad w(G_{out}) \leq w(G) - w_{out} $$
+Der branching vector ist also $(w_{in}, w_{out})$.
+
+Da in beiden Fällen mindestens $v$ entfernt wird, wissen wir dass $w_{in}, w_{out} \geq 1$.
+
+Jeder Knoten $u \in N(v)$ mit $\deg_G(u) = 2$ wird entweder entfernt ($G_{in}$) oder verliert seinen Nachbarn $v$ ($G_{out}$).
+In beiden Fällen verringert sich das Gewicht um $\frac{1}{2}$, in der Summe also um 1.
+\\
+Jeder Knoten $u \in N(v)$ mit $\deg_G(u) \geq 3$ wird in $G_{in}$ entfernt, d.h. der Graph verliert Gewicht 1.
+Über $G_{out}$ können wir in diesem Fall nichts sagen, das Gewicht von $u$ bleibt schlimmstenfalls gleich.
+
+Zusammengefasst:
+In beiden Fällen wird $v$ entfernt (wobei $w(v)=1$ sonst würden wir nicht auf $v$ branchen).
+Ausserdem wird via die Nachbarschaft $N(v)$ über $G_{in}, G_{out}$ hinweg $d := \deg_G(v)$-mal
+das Knotengewicht 1 entfernt. Also gilt in der Summe:
+$$ w_{in} + w_{out} \geq 2 + d $$
+
+Aus der vorherigen Beobachtung folgt, dass im schlimssten Fall $w_{in}, w_{out}$ unbalanciert sind, also der
+branching vector $(1, 1 + d)$ ist.
+
+Fallunterscheidung:
 \begin{itemize}
-    \item Sei $G$ ein Graph. Ein \emph{perfektes Matching} in $G$ ist eine Menge $\{e_1, \dots e_{n/2}\} \subseteq E$
-    paarweiser disjunkter Kanten, die ganz $V$ abdecken: $e_1 \cup \dots \cup e_{n/2} = V$.
-    \item Die Anzahl perfekter Matchings in $G$ bezeichnen wir mit $\Pm(G)$.
+    \item[$d=3$]
+    Der Graph hat nur Knoten von Grad 2 oder 3.
+    Damit wissen wir, dass sich sowohl in $G_{in}$ als auch in $G_{out}$ das Gewicht aller Nachbarn
+    von $v$ um mindestens $\frac{1}{2}$ verringert:
+    $$ w_{in}, w_{out} \geq 1 + 3 \cdot \frac{1}{2} = 2.5 $$
+    $\implies$ $\alpha(2.5, 2.5) < 1.3196$.
+    \item[$d \geq4 $]
+    $\implies$ $\alpha(1, 5) < 1.3248$.
 \end{itemize}
+Wegen der Beobachtung wissen wir, dass $\alpha(1, 4) > \alpha(1, 5)$.
+Diese Fallunterscheidung erlaubt es uns den Fall $d=3$ besser abzuschätzen als mit $\alpha(1, 4)$.
+Da für grössere $d$ der branching factor $\alpha$ nur kleiner wird, können wir folgern:
 
-
-
-
+\paragraph{Theorem}
+Max-Degree-Branch-Max-IS löst Max-IS in Zeit $\bigOstar(1.3248^n)$.
