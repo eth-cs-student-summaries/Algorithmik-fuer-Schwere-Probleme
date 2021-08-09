@@ -1,0 +1,170 @@
+\section{Approximations-Algorithmen}
+
+\begin{takeaway}
+    \item Relativer Fehler, Approximationsgüte
+    \item Beispiele: 2-Approximation Min-VCP, Spannbaum-TSP, Christofides (metrisches TSP)
+    \item Nichtapproximierbarkeit
+\end{takeaway}
+
+\paragraph{Motivation}
+Schwere Optimierungsprobleme: Statt Abstriche bei der Laufzeit zu machen (Parametrisierung,
+exponentiell aber mit kleiner Basis), machen wir Abstriche bei der Optimalität.
+Ein Approximationsalgorithmus berechnet eine zulässige Lösung (feasible solution), dessen Qualität
+nicht weit von der Qualität einer optimalen Lösung abweicht.
+
+\paragraph{Definitionen}
+Sei $U = (L, \M, cost, goal)$ ein Optimierungsproblem und sei $\A$ ein Algorithmus für $U$.
+{
+\newcommand{\opt}{Opt_U(I)}
+\newcommand{\cost}{cost(\A(I))}
+\begin{itemize}
+    \item Für alle $I \in L$ ist der \emph{relative Fehler von $\A$ auf $I$}
+    $$ \varepsilon_\A(I) := \frac{|\cost - \opt|}{\min \{ \opt, \cost \} } $$
+    \item Für alle $n \in \N$ ist der \emph{relative Fehler von $\A$}
+    $$ \varepsilon_\A(n) := \max_{I \in L} \{ \varepsilon_\A(I) \st |I|=n \} $$
+    \item Für alle $I \in L$ ist die \emph{Approximationsgüte (approximation ratio) von $\A$ auf $I$}
+    $$ R_\A(I) := \max \left\{ \frac{\cost}{\opt}, \frac{\opt}{\cost} \right\} $$
+    \item Für alle $n \in \N$ ist die \emph{Approximationsgüte (approximation ratio) von $\A$}
+    $$ R_\A(n) := \max_{I \in L} \{ R_\A(I) \st |I|=n \} $$
+    \item Für alle positiven reellen $\delta > 1$ heisst $\A$ \emph{$\delta$-Approximationsalgorithmus für $U$} falls gilt
+    $$ \forall I \in L \; . \; R_\A(I) \leq \delta $$
+    \item Für jede Funktion $f : \N \mapsto \R^+$ heisst $\A$ \emph{$f(n)$-Approximationsalgorithmus für $U$} falls gilt
+    $$ \forall n \in \N \; . \; R_\A(I) \leq f(n) $$
+\end{itemize}
+Wobei die Definitionen sowohl $goal=\min$ als auch $goal=\max$ sinnvoll beschreiben.
+}
+
+\paragraph{Beispiel: 2-Approximationsalgorithmus für Min-VCP}
+Idee: berechne ein maximales Matching $M$ und ein approximiertes vertex cover $C$.
+\begin{enumerate}
+    \item Initialisierung: Sei $C \leftarrow \emptyset, M \leftarrow \emptyset, E' \leftarrow E$.
+    \item while $E' \neq \emptyset$ do: \\
+    Wähle eine beliebige Kante $\{u,v\} \in E'$. \\
+    Update: $C \leftarrow C \cup \{u,v\} , M \leftarrow M \cup \{ \{u,v\} \} ,
+    E' \leftarrow E' - \{\text{all edges incident to $u$ or $v$}\} $
+\end{enumerate}
+
+\paragraph{Theorem}
+Obiger Algorithmus ist ein 2-Approximationsalgorithmus für das Min-VCP.
+
+\underline{Beweis:}
+Korrektheit: nur Kanten die mindestens einen Nachbarn in $C$ haben werden entfernt, daher ist $C$ ein vertex cover. \\
+Laufzeit: Linearzeit, $\bigO(|E|)$. \\
+2-Approximation: $|C| = 2 \cdot |M|$.
+Um $|M|$ viele Kanten in $M$ (und damit auch in $G$, da $M \subseteq E$) zu überdecken,
+werden $\geq |M|$ viele Knoten benötigt. \\
+$ \implies Opt_{Min-VCP}(G) \geq |M| \iff |C| \leq 2 \cdot Opt_{Min-VCP}(G) $.
+
+\paragraph{Beispiel: Metrisches-TSP ($\Delta$-TSP)}
+Eingabe: vollständiger, gewichteter Graphen $G=(V,E)$ und Kostenfunktion $c : E \mapsto \N^+$.
+Metrisch == Dreiecksungleichung gilt:
+$$ \forall u,v,w \in V \cl c(\{u,v\}) \leq c(\{u,w\}) + c(\{w,v\}) $$
+
+\paragraph{Spannbaum-Algorithmus für $\Delta$-TSP}
+Idee: minimum Hamiltonkreise zu berechnen ist schwer, aber minimale Spannbäume sind einfach (Polynomzeit).
+\begin{enumerate}
+    \item Berechne einen MST $T$ von $G$
+    \item Wähle einen beliebigen $v \in V$.
+    Berechne eine DFS in $T$ ausgehend von $v$ und ordne dabei die Knoten in Besuchsreihenfolge $\overline{H}$.
+    \item return Hamiltonkreis $H = \overline{H}, v$
+\end{enumerate}
+
+\paragraph{Theorem}
+Der Spannbaum-Algorithmus ist ein 2-Approximationsalgorithmus für das $\Delta$-TSP.
+
+\underline{Beweis:}
+Korrektheit: offensichtlich. \\
+Laufzeit: polynomiell, z.B. $\bigO(|E| \log|V|)$ mit Kruskal-MST. \\
+2-Approximation:
+Sei $H_{Opt}$ ein optimaler Hamiltonkreis, d.h. $cost(H_{Opt}) = Opt_{\Delta-TSP}(I)$.
+Dann gilt:
+$$ cost(T) = \sum_{e \in E(T)} c(e) \leq cost(H_{Opt}) $$
+da $H_{Opt}$ durch Entfernen einer Kante zu einem Spannbaum wird und $T$ ein minimaler Spannbaum ist.
+\\
+Sei $W$ die Eulertour die $\A$ auf dem Multigraphen $T_2$ läuft
+(wobei $T_2$ aus $T$ durch Verdoppeln aller Kanten gebildet wird).
+Die Kosten von ausgegebenen $H$ ist eine E
+$$ cost(W) = 2 \cdot cost(T) \leq 2 \cdot cost(H_{Opt}) $$
+Wenn in $H$ noch doppelt vorkommende Knoten abgekürzt werden, gilt dank der Dreiecksungleichung:
+$$ cost(H) \leq cost(W) $$
+Insgesamt gilt also $ cost(H) \leq 2 \cdot cost(H_{Opt})$, also ist $\A$ eine 2-Approximation.
+
+\paragraph{Lemma}
+In jedem Graphen $T$ ist die Anzahl Knoten mit ungeradem Grad gerade.
+
+\underline{Beweis:}
+Summe $t$ aller Grade ist $2 \cdot |E|$ (gerade), Summe $e$ aller geraden Grade ist gerade, also ist
+die Differenz $o=t-e$ auch gerade.
+Da alle Summanden in der Summe $o$ aller ungeraden Grade ungerade sind muss die Anzahl Summanden
+(und damit die Anzahl Knoten mit ungeradem Grad) gerade sein.
+
+\paragraph{Christofides-Algorithmus für $\Delta$-TSP}
+Idee: für eine Eulertour braucht jeder Knoten geraden Grad.
+Berechne ein perfektes Matching auf den Knoten mit ungeradem Grad und vereinige es mit dem MST.
+\begin{enumerate}
+    \item Berechne eine MST $T$ von $G$
+    \item Sei $S \leftarrow \{ v \in V \st \deg_T(v) \text{ ungerade} \}$
+    \item Berechne ein perfektes Matching $M$ auf $S$ in $G$ mit minimalen Kosten
+    \item Berechne eine Eulertour $\omega$ auf dem Multigraphen $G' = (V, E(T) \cup M)$
+    \item Verkürze $\omega$ zu einem Hamiltonkreis $H$ in $G$ und gebe $H$ aus
+\end{enumerate}
+
+\paragraph{Theorem}
+Der Christofides-Algorithmus ist ein 1.5-Approximationsalgorithmus für das $\Delta$-TSP.
+
+\underline{Beweis:}
+Korrektheit: offensichtlich. \\
+Laufzeit: nicht-trivial (insbesondere perfektes Matching), aber in Polynomzeit $\bigO(n^4)$. \\
+1.5 Approximation:
+Es gilt ($\star$ wegen der Dreiecksungleichung):
+$$ cost(H) \overset{\star}{\leq} cost(\omega) = cost(G') = \sum_{e \in E(T) \cup M} c(e) = cost(T) + cost(M) $$
+Und wie beim Spannbaum-Algorithmus gilt $cost(T) \leq cost(H_{Opt})$.
+
+Zeige nun dass $cost(M) \leq \frac{1}{2} \cdot cost(H_{Opt})$ gilt:
+\\
+Sei $S=\{ v_1, \dots , v_{2m} \}$ die Menge von Knoten mit ungeradem Grad in $T$, o.B.d.A. so dass sie
+in dieser Reihenfolge in $H_{Opt}$ vorkommen:
+$$ H_{Opt} = v_1, \alpha_1, v_2, \alpha_2, \dots, \alpha_{2m-1}, v_{2m}, \alpha_{2m}, v_1 $$
+wobei $\alpha_i$ die (womöglich leeren) Pfade zwischen den $v_i$ in $H_{Opt}$ sind.
+\\
+Betrachte die disjunkten Matching $M_1, M_2$:
+\begin{align*}
+M_1 & := \{ \{v_1,v_2\}, \{v_3,v_4\}, \dots, \{v_{2m-1},v_{2m}\} \} \\
+M_2 & := \{ \{v_2,v_3\}, \{v_4,v_5\}, \dots, \{v_{2m-2},v_{2m-1}\}, \{v_{2m},v_1\} \}
+\end{align*}
+Dann gilt ($\star$ wegen der Dreiecksungleichung und den übersprungenen $\alpha_i$):
+$$ cost(M_1) + cost(M_2) = \sum_{i=1}^{2m} cost(v_i, v_{(i+1) \mod 2m}) \overset{\star}{\leq} cost(H_{Opt}) $$
+Ausserdem gilt $cost(M) \leq cost(M_1), cost(M_2)$ da $M_1, M_2$ ebenfalls perfekte Matchings in $S$ sind
+(aber $M$ ein min-cost perfektes Matching ist).
+Es folgt:
+$$ cost(M) \leq \min \{ cost(M_1), cost(M_2) \} \overset{\star}{\leq} \frac{1}{2} \cdot cost(H_{Opt}) $$
+wobei $\star$ gilt weil nicht beide grösser als  $\frac{1}{2} \cdot cost(H_{Opt})$ sein können.
+
+
+\subsection{Nichtapproximierbarkeit}
+
+\paragraph{Theorem}
+Es existiert kein (polynomieller) $2^n$-Approximationsalgorithmus für das allgemeine TSP, es sei denn P=NP.
+
+\underline{Beweis:}
+Reduktion von einem NP-schweren (Entscheidungs-)Problem (z.B. Hamiltonkreisproblem) auf das Problem eine
+approximierte TSP-Lösung zu finden.
+
+Reduktionsidee: Füge fehlende Kanten hinzu, so dass $G'$ vollständig ist.
+Definiere Kantengewichte:
+$$ c(e) = \begin{cases}
+1 & \text{ if } e \in E \\
+n \cdot 2^n + 1 & \text{ if } e \notin E
+\end{cases} $$
+Sei $\A$ ein Approximationsalgorithmus der auf Eingabe $(G', c)$ eine $2^n$-Approximation berechnet.
+\\
+Fallunterscheidung:
+\begin{enumerate}
+    \item $\exists \text{ Hamiltonkreis in } G \implies \exists \text{ Hamiltonkreis in } G' $ mit Kosten $n$
+    \item $\nexists \text{ Hamiltonkreis in } G \implies \forall \text{ Hamiltonkreise in } G' $ haben Kosten
+    $\geq (n-1) + (n \cdot 2^n + 1) > 2^n \cdot n $
+\end{enumerate}
+Ist die Ausgabe von $\A$ nun $> 2^n \cdot n$ dann weiss man, dass kein Hamiltonkreis der Kosten $n$ in $G$ existiert,
+da $\A$ ein $2^n$-Approximationsalgorithmus ist.
+Also kann $\A$ genutzt werden um das Hamiltonkreisproblem zu lösen, was ein Widerspruch zu P $\neq$ NP ist.
+
