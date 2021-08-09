@@ -125,3 +125,14 @@ Beispiel: $Lang_{MIN-VC} = VC$. Aber $Lang_{MAX-SAT} \neq SAT$ (da SAT leichter 
 $U$ heisst ``NP-schwer'' falls $Lang_U$ NP-schwer ist (warum?).%
 \footnote{Recall that NP-Schwere für Entscheidungsprobleme definiert ist.
 Über die Schwellwertsprache erweitern wir dies für Optimierungsprobleme.}
+
+\paragraph{Abschätzen von Anzahl Teilmengen}
+Frage: wie viele Teilmengen $T \subseteq \{1, \dots, n\}$ mit $|T| \leq k$ gibt es?
+Grobe Abschätzung:
+$$ \sum_{0 \leq i \leq k} \binom{n}{i}
+\overset{\star}{\leq} \sum_{0 \leq i \leq k} n^i
+\overset{\star\star}{\leq} \frac{n^{k+1} - 1}{n-1} \in \bigO(n^k) $$
+Wobei $\star$ für kleine $k$ okay, aber grosse $k$ ungenau ist, und $\star\star$ eine geometrische Summe.
+
+Da die Teilmengen in lexikographischer Ordnung durchlaufen werden können, lassen sie sich in amortisiert
+$\bigO(n^k)$ enumerieren.

@@ -19,13 +19,13 @@ $\A$ heisst \emph{pseudopolynomiell} falls für alle Eingaben $x$ ein Polynom $p
 $$ \Time_\A (x) \in \bigO \Big( p \big( |x| , Max-Int(x) \big) \Big) $$
 D.h. auf Eingaben mit ``kleinen Zahlen'' ist $\A$ polynomiell.
 
-\paragraph{Rucksackproblem (Knapsack problem KP)} \mbox{} \\
+\paragraph{Rucksackproblem (Knapsack problem KP)}\label{algo-kp} \mbox{} \\
 Eingabe $I$: Gewichte $w_i \in \N^+$, Kosten/Nutzen $c_i \in \N^+$, Limit/Kapazität $b \in \N^+$, wo $i \in \{ 1, \dots, n \} $. \\
 Ausgabe: Indexmenge $T \subseteq \{ 1, \dots, n \}$ s.t. $\sum_{i \in T } \leq b$ \\
 Kosten: $cost(T, I) = \sum_{i \in T} c_i$ \\
 Ziel: max
 
-\underline{Lösung mit DP:}
+\underline{Lösung mit DP (Dyn-Prog-KP):}
 Iteration über alle Teilprobleme $I_i$ und Speichern von Tripeln
 $(k, W_{i, k}, T_{i, k})$ = (Nutzen, Gewicht, Indexmenge), also Mengen $T_{i, k}$
 die exakt Nutzen $k$ mit minimalen Gewicht $W_{i, k}$ erreichen.

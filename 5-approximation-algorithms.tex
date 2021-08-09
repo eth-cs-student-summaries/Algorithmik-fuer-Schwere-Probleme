@@ -168,3 +168,136 @@ Ist die Ausgabe von $\A$ nun $> 2^n \cdot n$ dann weiss man, dass kein Hamiltonk
 da $\A$ ein $2^n$-Approximationsalgorithmus ist.
 Also kann $\A$ genutzt werden um das Hamiltonkreisproblem zu lösen, was ein Widerspruch zu P $\neq$ NP ist.
 
+
+\subsection{Approximationsschemata}
+
+\paragraph{Definition: PTAS/FPTAS}
+{
+\newcommand{\eps}{\varepsilon^{-1}}
+Sei $U = (L, \M, cost, goal)$ ein Optimierungsproblem und sei $\A$ ein konsistenter Algorithmus für $U$.
+
+$\A$ heisst \emph{polynomielles Approximationsschema (polynomial-time approximation scheme PTAS)}
+für $U$, falls gilt: \\
+für alle $(I,\varepsilon) \in L \times \R^+$ berechnet $\A$ eine zulässige Lösung $\A(I)$ mit
+$R_\A(I) \leq 1+\varepsilon$ und die Laufzeit $\Time_\A(I, \eps)$ ist polynomiell in $|I|$.%
+\footnote{Aber ohne Aussage über die Abhängigkeit von $\eps$, d.h. insbesondere darf $\Time_\A(I, \eps)$
+exponentiell in $\eps$ sein.}
+
+$\A$ heisst \emph{echtes polynomielles Approximationsschema (fully polynomial-time approximation scheme FPTAS)}
+für $U$, falls zusätzlich gilt: \\
+die Laufzeit $\Time_\A(I, \eps)$ ist polynomiell in $|I|$ \underline{und} $\eps$.
+}
+
+\paragraph{Einfaches Rucksackproblem (Simple Knapsack Problem SKP)} \mbox{} \\
+Eingabe: $w_1, \dots, w_n, b \in \N^+$ (daher ``einfach'': Gewicht = Kosten) \\
+Zulässige Lösungen: $T \subseteq \{1, \dots, n\}$ so dass $\sum_{i \in T} w_i \leq b$ \\
+Kosten: $cost(T) = \sum_{i \in T} w_i$ \\
+Ziel: $\max$
+
+\paragraph{Algorithmus: Greedy-SKP}
+\begin{enumerate}
+    \item Sortiere absteigend: $b \geq w_1 \geq \dots \geq w_n$
+    \item Initialisierung: $T \leftarrow \emptyset; cost(T) \leftarrow 0$
+    \item for all $i \in \{1, \dots, n\}$ do:
+    if $cost(T)+w_i \leq b$ then $T \leftarrow T \cup \{i\}; cost(T) \leftarrow cost(T)+w_i$
+\end{enumerate}
+
+\paragraph{Theorem}
+Greedy-SKP ist eine 2-Approximation für das SKP.
+
+\underline{Beweis:}
+Laufzeit: $\bigO(n \log n)$ \\
+2-Approximation:
+Zeige: $T$ ist optimal oder $cost(T) \geq \frac{b}{2}$.
+Falls $T=\{1, \dots, n\}$ dann ist $T$ optimal.
+Andernfalls sei $j$ der kleinste Index mit $j \notin T$ (da $b \geq w_1$ gilt $j \geq 2$).
+Dann gilt $cost(T) > b -w_j$ und $cost(T) \geq w_1 \geq w_j$.
+Addieren und durch 2 teilen ergibt: $cost(T) \geq (b-w_j+w_j)/2 = b/2$.
+
+\paragraph{Algorithmus: PTAS-SKP}
+Idee: Steuere durch den Parameter $\varepsilon$ mit wie viel Aufwand eine optimale Lösung ausprobiert werden
+soll, und mache den Rest greedy. \\
+Eingabe: $w_1, \dots, w_n, b \in \N^+$, $\varepsilon \in (0,1)$ (für $\varepsilon \geq 1$ nehme direkt Greedy-SKP)
+\begin{enumerate}
+    \item Sortiere absteigend: $b \geq w_1 \geq \dots \geq w_n$
+    \item $k \leftarrow \lceil \frac{1}{\varepsilon} \rceil$
+    \item Für alle $T \subseteq \{1, \dots, n\}$ mit $|T| \leq k$ und $\sum_{i \in T} w_i \leq b$:
+    erweitere $T$ zu $T^*$ mit Greedy-SKP
+    \item return das $T^*$ mit maximalem Gewicht
+\end{enumerate}
+Achtung: Wir betrachten alle Teilmengen der Grösse $k$, \underline{nicht} alle Teilmengen der ersten $k$ Elemente!
+
+\paragraph{Theorem}
+PTAS-SKP ist ein PTAS für das SKP.
+
+\underline{Beweis:}
+Laufzeit: $\bigO(n \log n + 1 + n^k \cdot n) = \bigO(n^{\lceil \frac{1}{\varepsilon} \rceil + 1})$
+$\rightarrow$ polynomiell für fixes $\varepsilon$, aber exponentiell in $\varepsilon$
+
+$(1+\varepsilon)$-Approximation: \\
+Sei $T_{Opt} = \{i_1, \dots, i_p\}$ eine optimale Lösung für Eingabe $I$, d.h. $cost(T_{Opt})=Opt_{SKP}(I)$.
+Fallunterscheidung:
+\begin{itemize}
+    \item[$p \leq k$:] PTAS-SKP betrachtet die Menge $T_{Opt}$, also ist $T^*$ optimal und der relative Fehler ist 0.
+    \item[$p > k$:] PTAS-SKP betrachtet die Menge $P=\{i_1, \dots, i_k\}$, d.h. die $k$ schwersten Elemente
+    der optimalen Lösung.
+    Sei $P^*$ die berechnete greedy Erweiterung von $P$. Falls $P^* = T_{Opt}$ sind wir fertig.
+    Sonst existiert ein $i_q \in T_{Opt}-P^*$ mit $i_q > i_k \geq k$. Es gilt:
+    $$ cost(P^*) + w_{i_q} > b \geq cost(T_{Opt}) $$
+    Dann gilt $\star$ mit einem Durchschnitts-Argument (da $w_{i_q}$ das kleinste Element der Summe ist):
+    $$ w_{i_q} \overset{\star}{\leq} \frac{ w_{i_1} + \dots + w_{i_k} + w_{i_q} }{k+1} \leq \frac{cost(T_{Opt})}{k+1} $$
+    Umformen ergibt:
+    \begin{align*}
+    R_{PTAS-SKP}(I)(I, \varepsilon) & \overset{\text{Def}}{=} \frac{cost(T_{Opt})}{cost(T^*)}
+    \leq \frac{cost(T_{Opt})}{cost(P^*)} \\
+    & \leq \frac{cost(T_{Opt})}{cost(T_{Opt}) - w_{i_q}}
+    \leq \frac{cost(T_{Opt})}{cost(T_{Opt}) - \frac{cost(T_{Opt})}{k+1} } \\
+    & = \frac{1}{1 - \frac{1}{k+1} } = \frac{k+1}{k} = 1 + \frac{1}{k} \leq 1 + \varepsilon
+    \end{align*}
+\end{itemize}
+
+\paragraph{Algorithmus: FPTAS-KP}
+Idee: Ähnlich zum pseudopolynomiellem DP-Algorithmus (siehe Seite \pageref{algo-kp}).
+Kostenwerte treiben Laufzeit nach oben, also runde sie.
+\\
+Eingabe: $w_1, \dots, w_n, c_1, \dots, c_n, b \in \N^+$, $\varepsilon \in (0,1)$
+\begin{enumerate}
+    \item Initialisierung: $c_{max} \leftarrow \max \{c_1, \dots, c_n\}$;
+    Rundungsfaktor $t \leftarrow \frac{\varepsilon \cdot c_{max}}{(1+\varepsilon) \cdot n}$
+    \item for all $i \in \{1, \dots, n\}$ do: $c_i' \leftarrow \lfloor \frac{c_i}{t} \rfloor$
+    \item Berechne eine optimale Lösung $T'$ auf Eingabe $I' = w_1, \dots, w_n, c_1', \dots, c_n', b$ mit Dyn-Prog-KP
+    \item return $T'$
+\end{enumerate}
+
+\paragraph{Theorem}
+FPTAS-KP ist ein FPTAS für das KP.
+
+\underline{Beweis:}
+Korrektheit: Gewichte bleiben unverändert, daher ist $T'$ eine zulässige Lösung für $I$.
+
+Approximationsgüte:
+Voller Beweis siehe Buch Kapitel 7.5, Seite 217f.
+Umformen ergibt:
+$$ cost(T_{Opt}, I) \geq  cost(T', I) \geq cost(T_{Opt}, I) - n \cdot t $$
+$$
+\implies 0 \leq cost(T_{Opt}, I) - cost(T', I) \leq n \cdot t
+\overset{\text{Def}}{\leq} n \cdot \frac{\varepsilon \cdot c_{max}}{(1+\varepsilon) \cdot n}
+\leq \frac{\varepsilon}{(1+\varepsilon)} \cdot c_{max}
+$$
+D.h. die Differenz zwischen der optimalen und der berechneten Lösung ist beschränkt durch eine Funktion
+in $\varepsilon$ und $c_{max}$.
+\\
+Weiteres Umformen (siehe Buch) ergibt wie gewünscht: $R_{FPTAS-KP}(I, \varepsilon) \leq 1 + \varepsilon$.
+
+Laufzeit: Es gilt:
+$$ \bigO(n + n + n \cdot \sum_{j=1}^n c_j') = \bigO(\varepsilon^{-1} \cdot n^3) $$
+dank folgender Abschätzung:
+\begin{align*}
+\sum_{j=1}^n c_j'
+= \sum_{j=1}^n \left\lfloor \frac{c_j}{t} \right\rfloor
+\leq \sum_{j=1}^n \left( c_j \cdot \frac{(1+\varepsilon) \cdot n}{\varepsilon \cdot c_{max}} \right)
+= \frac{1+\varepsilon}{\varepsilon} \cdot \frac{n}{c_{max}} \cdot \sum_{j=1}^n c_j
+\leq (1+\varepsilon) \cdot \varepsilon^{-1} \cdot n^2
+\in \bigO(\varepsilon^{-1} \cdot n^2)
+\end{align*}
+Die Laufzeit ist polynomiell in $n$ und $\varepsilon^{-1}$, also ist der Algorithmus ein FPTAS für das KP.
