@@ -2,14 +2,12 @@
 
 \begin{takeaway}
     \item NP-schwer vs. NP-vollständig
-    \item Entscheidungsproblem
+    \item Entscheidungsproblem, Optimierungsproblem
     \item Schwellwertsprache
-    \item Diverse Notationen, Definitionen und Beispiele
 \end{takeaway}
 
 \paragraph{Polynomzeit-Reduzierbarkeit}
-Ein Entscheidungsproblem $\Pi_1$ ist ``polynomzeit-reduzierbar'' auf ein anderes
-Entscheidungsproblem $\Pi_2$:
+Ein Entscheidungsproblem $\Pi_1$ ist ``polynomzeit-reduzierbar'' auf ein anderes Entscheidungsproblem $\Pi_2$:
 \begin{align*}
 & \Longleftrightarrow
 \exists \text{ Algo } \A \text{ s.t. } \Time_\A \in \text{poly}
@@ -50,17 +48,17 @@ Beispiel: Satisfiability-Problem SAT (Satz von Cook).
 \end{figure}
 
 \paragraph{``Schwere Probleme''}
-meisst NP-schwere Probleme, aber generell alle Probleme die sich nicht in Polynomzeit lösen lassen.
+Meist NP-schwere Probleme, aber generell alle Probleme die sich nicht in Polynomzeit lösen lassen.
 \textbf{Sinnvollerweise gehen wir im Folgenden davon aus dass $P \neq NP$.}
 
-Allgemein sind Instanzen unseres Problems \underline{nicht} deterministisch in Polynomzeit lösbar\footnote{Es kann sein, dass einige instannzen in polynomzeit lösbar sind, siehe z.B. \emph{Win-Win-Algorithmen}.}.
-Mögliche Ansätze:
+Unsere Probleme sind im Allgemeinen \underline{nicht} in Polynomzeit deterministisch lösbar.
+Wir versuchen daher einige mögliche Ansätze:
 \begin{enumerate}[label=\alph*)]
-    \item nicht exakt sondern approximativ lösen (Approximationsalgorithmen)
-    \item nicht deterministisch sondern nichtdeterministisch lösen (Randomisierte Algorithmen)
-    \item nicht polynomiell sondern moderat exponentiell lösen%
+    \item nicht exakt, sondern approximativ lösen (Approximationsalgorithmen)
+    \item nicht deterministisch, sondern nichtdeterministisch lösen (Randomisierte Algorithmen)
+    \item nicht polynomiell, sondern moderat exponentiell lösen%
     \footnote{D.h. die Basis der Exponentation ist klein, z.B. $1.4^n$ statt $2^n$.}
-    \item nicht alle sondern Instanzen mit einer bestimmten Struktur lösen (Parametrisierte Algorithmen)
+    \item nicht alle allgemeinen Instanzen, sondern die Instanzen mit einer bestimmten Struktur lösen (Parametrisierte Algorithmen)
     \item anderweitig zusätzliche Informationen über die Eingabe nutzen (Reoptimierung, Win-Win-Strategy)
     \item Heuristiken\footnote{Nachteil: Im Gegensatz zu den anderen Ansätzen ist hier die Qualität (Laufzeit, ...) nicht beweisbar.}
 \end{enumerate}
@@ -119,33 +117,33 @@ Die Laufzeit von $\A$ in Abhängigkeit von der Grösse $n$ der Eingabe ist:
 $\Time_\A (n) = \max \{ \Time_\A (x) \; | \; |x| = n, x \in L \}$.
 Die Laufzeit wird in  $\bigO$-Notation angegeben.
 
-\paragraph{Schwellwertsprache (threshold language)} 
-definiert für ein Optimierungsproblem $U$ als die Sprache die 
-für jede legale Eingabe von $U$ alle Tupel enthällt mit der Eingabe 
-selber und einer Zahl (in Binär) die grösser gleich der Kosten der optimalen Lösung ist:
+\paragraph{Schwellwertsprache (threshold language)}
+Die Sprache, die für ein Optimierungsproblem $U$ Tupel enthält, bestehend aus der Eingabe $x$ für $U$
+und dem (binären) \emph{Schwellwert} $a$:
+$$
+Lang_U = \begin{cases}
+\{ (x, a) \in L \times \binarystring \; | \; Opt_U(x) \leq \text{number}(a) \} & \text{ if $goal = \min$}
+\\
+\{ (x, a) \in L \times \binarystring \; | \; Opt_U(x) \geq \text{number}(a) \} & \text{ if $goal = \max$}
+\end{cases}
+$$
+wobei $\text{number}(a)$ die Zahl mit der Binärdarstellung $a$ ist.
 
-\[ Lang_U = \{ (x, a) \in L \times \binarystring \; | \; Opt_U(x) \leq \text{number}(a) \} \]
-\[ Lang_U = \{ (x, a) \in L \times \binarystring \; | \; Opt_U(x) \geq \text{number}(a) \} \]
-
-wo $Number(a)$ die Zahl mit der Binärdarstellung $a$ (der 
-\emph{Schwellwert}) ist und jeweils $goal = \min/\max$. 
-
-\textbf{Beispiel:} $Lang_{MIN-VC}$ enhällt für einen Eingabe $x$ die 
-optimal mit einem VC der grösse $k$ alle Tupel $(x, k')$ mit $k' \geq k$. 
-Somit gilt z.B. auch, dass $Lang_{MIN-VC} = VC$, weil wir die 
-Entscheidung des $VC$ Problems herausfinden können, indem wir 
-nach dem entsprechenden Tupel in $Lang_{MIN-VC}$ suchen. Anders 
-herum können wir heraus finden ob ein Tupel $(x, a) \in Lang_{MIN-VC}$ 
-indem wir $VC$ mit $k = a$ aufrufen.
-
-\emph{Achtung}, diese Relation gilt nicht für alle Probleme, z.B. 
-$Lang_{MAX-SAT} \neq SAT$ (da SAT leichter sein kann)!
+Über die Schwellwertsprache konstruieren wir aus einem Optimierungsprobleme ein Entscheidungsproblem:
+Ist die optimale Lösung für $x$ kleiner als $a$?
 
 $U$ heisst ``NP-schwer'' falls $Lang_U$ NP-schwer ist (warum?).%
-\footnote{Wir erinnern uns, dass NP-Schwere für Entscheidungsprobleme 
-definiert ist. Über die Schwellwertsprache erweitern wir dies für 
-Optimierungsprobleme, indem wir aus dem Optimierungsproblem ein 
-Entscheidungsproblem konstruieren.}
+\footnote{NP-Schwere ist nur für Entscheidungsprobleme definiert!}
+
+\underline{Beispiel:}
+$Lang_{MIN-VC}$ enthält für eine fixe Eingabe $x$, die ein optimales VC der Grösse $k$ hat,
+alle Tupel $(x, k')$ mit $k' \geq k$.
+\\
+Somit gilt insbesondere auch $Lang_{MIN-VC} = VC$, weil wir die VCP Instanz $I=(x,k)$ entscheiden können,
+indem wir nach dem entsprechenden Tupel in $Lang_{MIN-VC}$ suchen.
+Anders herum können wir entscheiden ob ein Tupel $(x, a) \in Lang_{MIN-VC}$ indem wir $VC$ mit $k = a$ aufrufen.
+
+\emph{Achtung}, dies gilt nicht für alle Probleme: z.B. $Lang_{MAX-SAT} \neq SAT$ (da SAT leichter sein kann)!
 
 \paragraph{Abschätzen von Anzahl Teilmengen}
 Frage: wie viele Teilmengen $T \subseteq \{1, \dots, n\}$ mit $|T| \leq k$ gibt es?
@@ -153,9 +151,7 @@ Grobe Abschätzung:
 $$ \sum_{0 \leq i \leq k} \binom{n}{i}
 \overset{\star}{\leq} \sum_{0 \leq i \leq k} n^i
 \overset{\star\star}{\leq} \frac{n^{k+1} - 1}{n-1} \in \bigO(n^k) $$
-Wobei $\star$ für kleine $k$ okay, aber grosse $k$ ungenau ist, und $\star\star$ 
-eine geometrische Summe.
+Wobei $\star$ für kleine $k$ okay, aber grosse $k$ ungenau ist, und $\star\star$ eine geometrische Summe.
 
-Da die Teilmengen in lexikographischer Ordnung durchlaufen werden können, 
-lassen sie sich in amortisiert
+Da die Teilmengen in lexikographischer Ordnung durchlaufen werden können, lassen sie sich in amortisiert
 $\bigO(n^k)$ enumerieren.

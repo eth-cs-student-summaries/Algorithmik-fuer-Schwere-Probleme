@@ -5,51 +5,49 @@
     \item Stark NP-schwer
 \end{takeaway}
 
-\paragraph{Zahlproblem (integer value problem IVP)} 
-Probleme, dessen Eingaben vollständig durch Integer darstellbar sind.
+\paragraph{Zahlproblem (integer value problem IVP)}
+Probleme, dessen Eingaben vollständig durch Integers darstellbar sind.
 
-Eingabe $x = x_1 \# \dots \# x_n \; ; \; x_i \in \binarystring$, interpretiert 
-als Vektor $\text{int}(x) = (\text{number}(x_i), \dots, \text{number}(x_n))$.
+Eingabe: $x = x_1 \# \dots \# x_n \; ; \; x_i \in \binarystring$, interpretiert als Vektor:
+$\text{int}(x) = (\text{number}(x_i), \dots, \text{number}(x_n))$
 
 Weiter sei 
-\[\text{max-int}(x) = \max_{i \in \{1, ..., n\}} \text{number}(x_i)\]
-die grösste vorkommende Zahl (im Wert, nicht in der Darstellung). Da die 
-Eingabe binär definiert ist, kann $Max-Int(x)$ exponentiell in $|x|$ sein.
+\[ \text{max-int}(x) = \max_{i \in \{1, \dots, n\}} \text{number}(x_i) \]
+die grösste vorkommende Zahl (im Wert, nicht in der Darstellung).
+Da die  Eingabe binär definiert ist, kann $\text{max-int}(x)$ exponentiell in $|x|$ sein.
 
-\textbf{Beispiel:} Travelling Salesperson Problem TSP (via Adjazenzmatrix des Graphen).
+\underline{Beispiel:}
+Travelling Salesperson Problem TSP (via Adjazenzmatrix des Graphen).
 
 \paragraph{Pseudopolynomiell}
 Sei $U$ ein Zahlproblem und $\A$ ein Algorithmus der $U$ löst.
-$\A$ heisst \emph{pseudopolynomiell} falls für alle Eingaben $x$ ein 
-Polynom $p$ existiert, so dass 
-\[ \Time_\A (x) \in \bigO \Big( p \big( |x| , \text{max-int}(x) \big) \Big)\]
+$\A$ heisst \emph{pseudopolynomiell} falls für alle Eingaben $x$ ein Polynom $p$ existiert, so dass
+\[ \Time_\A (x) \in \bigO \Big( p \big( |x| , \text{max-int}(x) \big) \Big) \]
 D.h. auf Eingaben mit ``kleinen Zahlen'' ist $\A$ polynomiell.
 
 \paragraph{h-beschränktes Teilproblem}
 Sei $U$ ein Zahlproblem, $h: \N \mapsto \N$ monoton nicht-fallend.
-Das \emph{h-beschränkte Teilproblem von $U$ (h-value-bounded subproblem)} 
-$\text{value}(h)\text{-}U$ ist das Teilproblem mit Eingaben $I$ für 
-die gilt: $\text{max-int}(I) \leq h(|I|)$.
+Das \emph{h-beschränkte Teilproblem von $U$ (h-value-bounded subproblem)} $\text{value}(h)\text{-}U$
+ist das Teilproblem mit Eingaben $I$ für die gilt: $\text{max-int}(I) \leq h(|I|)$.
 
 \paragraph{Stark NP-schwer}
 Ein Zahlproblem $U$ heisst \emph{stark NP-schwer} falls ein Polynom $p$ existiert, 
 so dass $\text{value}(p)\text{-}U$ NP-schwer ist.
+\\
+In anderen Worten: $U$ ist stark NP-schwer wenn es auch dann NP-schwer ist wenn alle darin
+vorkommenden Zahlen ``klein'' sind.
 
-In anderen Worten: $U$ ist stark NP-schwer wenn es auch dann NP-schwer ist wenn 
-alle darin vorkommenden Zahlen ``klein'' sind.
-
-Beispiel: TSP ist stark NP-schwer. Generell jedes gewichtete 
-Graph-Optimierungsproblem ist NP-schwer, wenn das ungewichtete Pendant 
-NP-schwer ist (bei TSP also das Hamiltonkreisproblem HCP).
+Beispiel: Jedes gewichtete Graph-Optimierungsproblem ist stark NP-schwer, wenn das ungewichtete Pendant 
+NP-schwer ist (z.B. TSP $\leftrightarrow$ Hamiltonkreisproblem HCP).
 
 \paragraph{Theorem}
-Sei $U$ stark NP-schwer. Dann existiert kein pseudopolynomieller Algorithmus für $U$. 
+Sei $U$ stark NP-schwer. Dann existiert kein pseudopolynomieller Algorithmus für $U$.%
 \footnote{Wie immer unter der Annahme dass $P \neq NP$.}
 
-Beweis Ansatz: Wir nehmen an, dass ein pseudo poly. Algorithmus $\mathcal{A}$ 
-für $U$ existiert. Über die Definition von Stark NP-schwer können wir dann 
-zeigen, dass wir ein polynomiellen Algorithmus für $\text{value}(p)\text{-}U$ 
-hätten, was ein Widerspruch ist.
+\underline{Beweisidee:}
+Angenommen, ein pseudopolynomieller Algorithmus $\A$ für $U$ existiert und $U$ ist stark NP-schwer.
+Über die Definition von Starker NP-Schwere können wir dann zeigen, dass ein polynomieller Algorithmus
+für $\text{value}(p)\text{-}U$ existiert, was ein Widerspruch ist.
 
 
 \subsection{Rucksackproblem (Knapsack problem, KP)}\label{algo-kp}
