@@ -1,0 +1,157 @@
+\section{Hybrid-Algorithmen}
+
+\begin{takeaway}
+    \item Hybrid-Algorithmen
+    \item Win-Win-Algorithmen
+\end{takeaway}
+
+\paragraph{Idee}
+Ziel: Ein Algorithmus, der für jede Eingabe
+\begin{itemize}
+    \item entweder eine bessere Approximationsgüte erreicht
+    \item oder eine optimale Lösung schneller berechnet
+\end{itemize}
+als die allgemein bewiesenen jeweiligen worst-case Schranken.
+D.h. es gibt Probleme für die Menge an schweren Instanzen disjunkt sind.
+
+\paragraph{Definition}
+Ein \emph{Hybrid-Algorithmus} besteht aus einer Menge von Algorithmen für ein Problem $U$
+und einem \emph{selector} $S$, der entscheidet welcher der Algorithmen auf eine gegebene Eingabe
+angewendet werden soll.
+
+
+\paragraph{Beispiel: Max-Cut} in ungewichteten Graphen.
+Der beste bekannte exakte Algorithmus braucht Zeit $\bigO(2^{m/5})$,
+die beste bekannte (aber sehr rechenintensive) Approximation hat Approximationsgüte $1.1383$.
+Die beste bekannte Linearzeit-Approximation erreicht Güte 2 in Zeit $\bigO(n+m)$.
+
+\paragraph{Theorem}
+Für jedes $\varepsilon > 0$ existiert ein Hybrid-Algorithmus für Max-Cut, der
+entweder eine optimale Lösung in Zeit $\bigOstar(2^{\varepsilon \cdot m})$ berechnet,
+oder eine Lösung mit erwarteter Approximationsgüte $\frac{4}{2+\varepsilon}$ in Linearzeit berechnet.
+
+\underline{Beweis:}
+Konstruktiv: Hybrid-Algorithmus $\A$ berechnet zuerst ein inklusionsmaximales Matching $M$ von $G$.
+Dann gilt: $\forall \{u,v\} \in E \cl u \in M \vee v \in M$.
+Fallunterscheidung (selector):
+\begin{itemize}
+    \item[$|M| < \varepsilon \cdot \frac{m}{2}$]
+    Wenn das Matching klein ist, dann berechne eine optimale Lösung:
+    Für jede mögliche Partitionierung von $V(M)$, ordne die restlichen Knoten $V-V(M)$ einer nach dem anderen
+    greedy einer Hälfte zu.
+    \\
+    Optimalität: die optimale Lösung enthält mindestens eine der ausprobierten Partitionen.
+    Da $M$ inklusionsmaximal ist, ist $V-V(M)$ ein independent set.
+    Dann ist die Zuordnung der restlichen Knoten nur abhängig von der Partitionierung, d.h. greedy ist genügend.
+    \\
+    Laufzeit: $|V(M)| < \varepsilon m \implies < 2^{\varepsilon m}$ mögliche Partitionen
+    $\implies \bigOstar(2^{\varepsilon m})$
+    %
+    \item[$|M| \geq  \varepsilon \cdot \frac{m}{2}$]
+    Randomisierter Approximationsalgorithmus:
+    Bilde randomisiert eine Partition $(V_1, V_2)$ so dass: \\
+    1) $\forall \{u,v\} \in M$ gilt $\Pr[u \in V_1, v \in V_2] = \frac{1}{2}$ und $\Pr[u \in V_2, v \in V_1] = \frac{1}{2}$. \\
+    2) $\forall x \in V-V(M)$ gilt $\Pr[x \in V_1] = \frac{1}{2}$ und $\Pr[x \in V_2] = \frac{1}{2}$.
+    \\
+    Erwarteter Cut: Matching-Kanten sind immer im Cut. Andere Kanten sind mit $p=\frac{1}{2}$ im Cut.
+    $ \implies \mathbb{E}[|\text{cut}|] \geq \frac{\varepsilon m}{2} + \frac{1}{2} \cdot (m - \frac{\varepsilon m}{2})
+    = \frac{m}{2} + \frac{\varepsilon m}{4} $ \\
+    $ \implies R_\A(I) \leq \frac{Opt_{Max-Cut}(I)}{cost(\A(I))}
+    \leq \frac{m}{ \frac{m}{2} + \frac{\varepsilon m}{4} }
+    = \frac{4}{2 + \varepsilon} $
+\end{itemize}
+D.h. für $\varepsilon < \frac{1}{5}$ verbessert der Hybrid-Algorithmus einen der beiden bekannten Algorithmen.
+
+
+\subsection{Win-Win Algorithmen}
+
+\paragraph{Idee}
+Statt einer Sammlung von Algorithmen, verwende eine Sammlung von Problemen.
+Auf eine gegebene Eingabe finde eine Lösung für mindestens eines der Probleme.
+
+\paragraph{Beispiel: parametrisiert, k-VCP und k-MST}
+Gegeben ein Graph $G$, existiert ein vertex cover der Grösse $\leq k$?
+Existiert ein Spannbaum mit $\geq k$ inneren Knoten?
+Beide Probleme sind NP-schwer.
+
+\paragraph{Theorem}
+Sei $G$ ein ungerichteter Graph und $k \in \N$.
+Es existiert ein Algorithmus, der entweder das k-VCP oder das k-MST in Polynomzeit löst.
+
+\underline{Beweis:}
+Nutze das nachfolgende Lemma. Damit gilt:
+Falls $T$ ein Hamiltonpfad ist, ist $T$ insbesondere auch ein Spannbaum mit $\geq k$ inneren Knoten (für sinnvolle $k$).
+Falls $T$'s Blätter ein independent set sind, gilt folgende Fallunterscheidung: \\
+Fall 1: $T$ hat $\geq k$ innere Knoten: k-MST gelöst. \\
+Fall 2: $T$ hat $\leq k$ innere Knoten: k-VCP gelöst, da die inneren Knoten von $T$ einen VC bilden
+(da die Blätter ein IS sind).
+
+Mögliche Anwendung: Kernelisation für das k-MST Problem.
+Entscheide entweder das parametrisierte Problem direkt, oder reduziere die Instanz.
+
+\paragraph{Lemma}
+Sei $G$ ein ungerichteter Graph.
+Es existiert ein Algorithmus der in Polynomzeit einen Spannbaum $T$ berechnet, so dass entweder $T$
+ein Hamiltonpfad ist\footnote{D.h. $T$ hat $n-2$ interne Knoten und zwei Blätter. Kein Knoten hat Grad $>2$.},
+oder $T$'s Blätter ein independent set bilden.
+
+\underline{Beweis:}
+Konstruktiv: Sei $T$ ein beliebiger Spannbaum.
+Transformiere $T$ in einen Spannbaum $T'$, für den eine der Bedingungen gilt, wie folgt:
+Finde iterativ ein Blätterpaar $u,v$ das in $G$ verbunden ist.
+Füge $\{u,v\}$ zu $T'$ hinzu und entferne eine Kante mit $\geq 3$ Nachbarn auf dem
+eindeutigen Pfad von $u$ nach $v$.
+Diese Reduktion verringert die Anzahl Blätter um 1, und endet in $T'$ mit entweder keinem Knoten mit Grad $>2$,
+oder mit den Blättern als independent set.
+
+\paragraph{Beispiel: Approximation, (1,2)-TSP und IS}
+Gegeben ein Graph $G$, finde entweder eine $(1+\varepsilon)$-Approximation/PTAS für das
+(1,2)-TSP (TSP auf vollständigem Graphen mit Kantenkosten 1 oder 2) oder für das Independent Set Problem (IS).
+Für beide Probleme allein existiert kein PTAS, d.h. beide sind APX-schwer.
+
+\paragraph{Theorem}
+Sei $G =(V,E,c)$ ein vollständig gewichteter Graph mit $\forall e \in E \cl c(e) \in \{1,2\}$.
+Sei $E_1 = \{e \in E \st c(e) = 1 \}$. Sei $G_1=(V,E_1)$.
+Sei $\varepsilon > 0$.
+\\
+Dann existiert ein Polynomzeit-Algorithmus $\A$, der entweder eine $(1+\varepsilon)$-Approximation für (1,2)-TSP auf $G$,
+oder eine $(1+\varepsilon)$-Approximation für IS auf $G_1$ berechnet.
+
+\underline{Beweis:}
+Idee: Konstruiere einen Hamiltonpfad der Länge $L$ in $G$ und ein IS der Grösse $I$ in $G_1$ so dass gilt: $L-I \leq n-2$.
+Daraus lässt sich eine der gesuchten Lösungen konstruieren.
+
+Konstruktion: Sei $k$ die Anzahl Zusammenhangskomponenten in $G_1$, und sei $C$ eine davon.%
+\footnote{Die Komponenten können durch 2er-Kanten -- die in $G_1$ fehlen -- getrennt sein.}
+Berechne für $C$ einen Spannbaum $T_C$ \emph{gemäss obigem Lemma} (also nur mit unabhängigen Blättern, oder ein Hamiltonpfad).
+\\
+Sei $I_C$ eine maximale Menge unabhängiger Blätter von $T_C$.
+Sei $P_C$ ein Hamiltonpfad in $G$ (!) auf den Knoten in $C$, der durch Tiefensuche in $T_C$ (!) ausgehend
+von einem Blatt in $T_C$ entsteht.
+
+Mit Abkürzen hat $P_C$ genau Länge $|V(C)|-1$.
+$P_C$ durchläuft 1-er Kanten (nach dem Startblatt und nach jedem inneren Knoten), sowie 2-er Kanten
+(nach jedem Blatt, dank Abkürzen via $E-E_1$ zum nächsten Knoten).
+Daher gilt:
+$$ cost(P_C) \leq \text{Länge des Pfades + Extrakosten für 2er-Kanten} = |V(C)|-1 + |I_C|-1 $$
+
+Verbinde die Pfade $P_C$ zu einem Hamiltonpfad $P$ für $G$ der Länge $L$.
+Vereinige die independent sets $I_C$ zu einem IS für $G_1$ der Grösse $I$.
+Dann gilt:
+\begin{align*}
+\implies L = cost(P)
+& \leq \left( \sum_C cost(P_C) \right) + (k-1) \cdot 2 \\
+& \leq \left( \sum_C |V(C)| \right) + \left( \sum_C |I_C| \right) - 2k + 2k - 2 \\
+& \leq n + I - 2 \\
+\iff L - I & \leq n-2
+\end{align*}
+
+Sei $L^*$ die Länge eines optimalen Hamiltonpfades in $G$ und sei $I^*$ die Grösse eines optimalen IS in $G_1$.
+Offensichtlich gilt $L^* \geq n$ (da Kantengewichte 1 oder 2) und $I^* \leq n$ (maximal alle Knoten).
+\\
+Falls: $L \leq (1+\varepsilon) \cdot n$
+$\implies$ $(1+\varepsilon)$-Approximation für (1,2)-TSP.
+\\
+Sonst: $I \geq L - n+2 \geq \underbrace{(1+\varepsilon) \cdot n}_{\leq L} - n+2 = \varepsilon n + 2 \geq \varepsilon n$
+$\implies$ $(1+\varepsilon)$-Approximation für IS.
+
