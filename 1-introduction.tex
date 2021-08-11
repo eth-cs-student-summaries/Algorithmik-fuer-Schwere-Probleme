@@ -119,20 +119,33 @@ Die Laufzeit von $\A$ in Abhängigkeit von der Grösse $n$ der Eingabe ist:
 $\Time_\A (n) = \max \{ \Time_\A (x) \; | \; |x| = n, x \in L \}$.
 Die Laufzeit wird in  $\bigO$-Notation angegeben.
 
-\paragraph{Schwellwertsprache (threshold language)} definiert für ein Optimierungsproblem $U$ als die Sprache die für jede legale Eingabe von $U$ alle Tupel enthällt mit der Eingabe selber und einer Zahl (in Binär) die grösser gleich der Kosten der optimalen Lösung ist:
+\paragraph{Schwellwertsprache (threshold language)} 
+definiert für ein Optimierungsproblem $U$ als die Sprache die 
+für jede legale Eingabe von $U$ alle Tupel enthällt mit der Eingabe 
+selber und einer Zahl (in Binär) die grösser gleich der Kosten der optimalen Lösung ist:
 
 \[ Lang_U = \{ (x, a) \in L \times \binarystring \; | \; Opt_U(x) \leq \text{number}(a) \} \]
 \[ Lang_U = \{ (x, a) \in L \times \binarystring \; | \; Opt_U(x) \geq \text{number}(a) \} \]
 
-wo $Number(a)$ die Zahl mit der Binärdarstellung $a$ (der \emph{Schwellwert}) ist und jeweils $goal = \min/\max$. 
+wo $Number(a)$ die Zahl mit der Binärdarstellung $a$ (der 
+\emph{Schwellwert}) ist und jeweils $goal = \min/\max$. 
 
-\textbf{Beispiel:} $Lang_{MIN-VC}$ enhällt für einen Eingabe $x$ die optimal mit einem VC der grösse $k$ alle Tupel $(x, k')$ mit $k' \geq k$. Somit gilt z.B. auch, dass $Lang_{MIN-VC} = VC$, weil wir die Entscheidung des $VC$ Problems herausfinden können, indem wir nach dem entsprechenden Tupel in $Lang_{MIN-VC}$ suchen. Anders herum können wir heraus finden ob ein Tupel $(x, a) \in Lang_{MIN-VC}$ indem wir $VC$ mit $k = a$ aufrufen.
+\textbf{Beispiel:} $Lang_{MIN-VC}$ enhällt für einen Eingabe $x$ die 
+optimal mit einem VC der grösse $k$ alle Tupel $(x, k')$ mit $k' \geq k$. 
+Somit gilt z.B. auch, dass $Lang_{MIN-VC} = VC$, weil wir die 
+Entscheidung des $VC$ Problems herausfinden können, indem wir 
+nach dem entsprechenden Tupel in $Lang_{MIN-VC}$ suchen. Anders 
+herum können wir heraus finden ob ein Tupel $(x, a) \in Lang_{MIN-VC}$ 
+indem wir $VC$ mit $k = a$ aufrufen.
 
-\emph{Achtung}, diese Relation gilt nicht für alle Probleme, z.B. $Lang_{MAX-SAT} \neq SAT$ (da SAT leichter sein kann)!
+\emph{Achtung}, diese Relation gilt nicht für alle Probleme, z.B. 
+$Lang_{MAX-SAT} \neq SAT$ (da SAT leichter sein kann)!
 
 $U$ heisst ``NP-schwer'' falls $Lang_U$ NP-schwer ist (warum?).%
-\footnote{Wir erinnern uns, dass NP-Schwere für Entscheidungsprobleme definiert ist.
-Über die Schwellwertsprache erweitern wir dies für Optimierungsprobleme, indem wir aus dem Optimierungsproblem ein Entscheidungsproblem konstruieren.}
+\footnote{Wir erinnern uns, dass NP-Schwere für Entscheidungsprobleme 
+definiert ist. Über die Schwellwertsprache erweitern wir dies für 
+Optimierungsprobleme, indem wir aus dem Optimierungsproblem ein 
+Entscheidungsproblem konstruieren.}
 
 \paragraph{Abschätzen von Anzahl Teilmengen}
 Frage: wie viele Teilmengen $T \subseteq \{1, \dots, n\}$ mit $|T| \leq k$ gibt es?
@@ -140,7 +153,9 @@ Grobe Abschätzung:
 $$ \sum_{0 \leq i \leq k} \binom{n}{i}
 \overset{\star}{\leq} \sum_{0 \leq i \leq k} n^i
 \overset{\star\star}{\leq} \frac{n^{k+1} - 1}{n-1} \in \bigO(n^k) $$
-Wobei $\star$ für kleine $k$ okay, aber grosse $k$ ungenau ist, und $\star\star$ eine geometrische Summe.
+Wobei $\star$ für kleine $k$ okay, aber grosse $k$ ungenau ist, und $\star\star$ 
+eine geometrische Summe.
 
-Da die Teilmengen in lexikographischer Ordnung durchlaufen werden können, lassen sie sich in amortisiert
+Da die Teilmengen in lexikographischer Ordnung durchlaufen werden können, 
+lassen sie sich in amortisiert
 $\bigO(n^k)$ enumerieren.

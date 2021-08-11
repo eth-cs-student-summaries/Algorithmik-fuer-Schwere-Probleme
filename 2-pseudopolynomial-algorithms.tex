@@ -5,67 +5,100 @@
     \item Stark NP-schwer
 \end{takeaway}
 
-\paragraph{Zahlproblem (integer value problem IVP)} Probleme, dessen Eingaben vollständig durch Integer darstellbar sind.
+\paragraph{Zahlproblem (integer value problem IVP)} 
+Probleme, dessen Eingaben vollständig durch Integer darstellbar sind.
 
-Eingabe $x = x_1 \# \dots \# x_n \; ; \; x_i \in \binarystring$, interpretiert als Vektor $\text{int}(x) = (\text{number}(x_i), \dots, \text{number}(x_n))$.
+Eingabe $x = x_1 \# \dots \# x_n \; ; \; x_i \in \binarystring$, interpretiert 
+als Vektor $\text{int}(x) = (\text{number}(x_i), \dots, \text{number}(x_n))$.
 
 Weiter sei 
 \[\text{max-int}(x) = \max_{i \in \{1, ..., n\}} \text{number}(x_i)\]
-die grösste vorkommende Zahl (im Wert, nicht in der Darstellung). Da die Eingabe binär definiert ist, kann $Max-Int(x)$ exponentiell in $|x|$ sein.
+die grösste vorkommende Zahl (im Wert, nicht in der Darstellung). Da die 
+Eingabe binär definiert ist, kann $Max-Int(x)$ exponentiell in $|x|$ sein.
 
 \textbf{Beispiel:} Travelling Salesperson Problem TSP (via Adjazenzmatrix des Graphen).
 
 \paragraph{Pseudopolynomiell}
 Sei $U$ ein Zahlproblem und $\A$ ein Algorithmus der $U$ löst.
-$\A$ heisst \emph{pseudopolynomiell} falls für alle Eingaben $x$ ein Polynom $p$ existiert, so dass
-$$ \Time_\A (x) \in \bigO \Big( p \big( |x| , \text{max-int}(x) \big) \Big) $$
+$\A$ heisst \emph{pseudopolynomiell} falls für alle Eingaben $x$ ein 
+Polynom $p$ existiert, so dass 
+\[ \Time_\A (x) \in \bigO \Big( p \big( |x| , \text{max-int}(x) \big) \Big)\]
 D.h. auf Eingaben mit ``kleinen Zahlen'' ist $\A$ polynomiell.
 
 \paragraph{h-beschränktes Teilproblem}
 Sei $U$ ein Zahlproblem, $h: \N \mapsto \N$ monoton nicht-fallend.
-Das \emph{h-beschränkte Teilproblem von $U$ (h-value-bounded subproblem)} $\text{value}(h)\text{-}U$
-ist das Teilproblem mit Eingaben $I$ für die gilt: $\text{max-int}(I) \leq h(|I|)$.
+Das \emph{h-beschränkte Teilproblem von $U$ (h-value-bounded subproblem)} 
+$\text{value}(h)\text{-}U$ ist das Teilproblem mit Eingaben $I$ für 
+die gilt: $\text{max-int}(I) \leq h(|I|)$.
 
 \paragraph{Stark NP-schwer}
-Ein Zahlproblem $U$ heisst \emph{stark NP-schwer} falls ein Polynom $p$ existiert, so dass $\text{value}(p)\text{-}U$ NP-schwer ist.
+Ein Zahlproblem $U$ heisst \emph{stark NP-schwer} falls ein Polynom $p$ existiert, 
+so dass $\text{value}(p)\text{-}U$ NP-schwer ist.
 
-In anderen Worten: $U$ ist stark NP-schwer wenn es auch dann NP-schwer ist wenn alle darin vorkommenden Zahlen ``klein'' sind.
+In anderen Worten: $U$ ist stark NP-schwer wenn es auch dann NP-schwer ist wenn 
+alle darin vorkommenden Zahlen ``klein'' sind.
 
-Beispiel: TSP ist stark NP-schwer. Generell jedes gewichtete Graph-Optimierungsproblem ist NP-schwer, wenn das ungewichtete Pendant NP-schwer ist (bei TSP also das Hamiltonkreisproblem HCP).
+Beispiel: TSP ist stark NP-schwer. Generell jedes gewichtete 
+Graph-Optimierungsproblem ist NP-schwer, wenn das ungewichtete Pendant 
+NP-schwer ist (bei TSP also das Hamiltonkreisproblem HCP).
 
 \paragraph{Theorem}
-Sei $U$ stark NP-schwer. Dann existiert kein pseudopolynomieller Algorithmus für $U$. \footnote{Wie immer unter der Annahme dass $P \neq NP$.}
+Sei $U$ stark NP-schwer. Dann existiert kein pseudopolynomieller Algorithmus für $U$. 
+\footnote{Wie immer unter der Annahme dass $P \neq NP$.}
 
-Beweis Ansatz: Wir nehmen an, dass ein pseudo poly. Algorithmus $\mathcal{A}$ für $U$ existiert. Über die Definition von Stark NP-schwer können wir dann zeigen, dass wir ein polynomiellen Algorithmus für $\text{value}(p)\text{-}U$ hätten, was ein Widerspruch ist.
+Beweis Ansatz: Wir nehmen an, dass ein pseudo poly. Algorithmus $\mathcal{A}$ 
+für $U$ existiert. Über die Definition von Stark NP-schwer können wir dann 
+zeigen, dass wir ein polynomiellen Algorithmus für $\text{value}(p)\text{-}U$ 
+hätten, was ein Widerspruch ist.
 
 
 \subsection{Rucksackproblem (Knapsack problem, KP)}\label{algo-kp}
 
-\paragraph{Rucksackproblem} Wie viel Diebesgut kann ich mitnehmen.
+\paragraph{Rucksackproblem}
+Wie viel Diebesgut kann ich mitnehmen.
 
-\textbf{Eingabe $I$:} Gewichte $w_i \in \N^+$, Kosten/Nutzen $c_i \in \N^+$, Limit/Kapazität $b \in \N^+$, wo $i \in \{ 1, \dots, n \} $. \\
+\textbf{Eingabe $I$:} Gewichte $w_i \in \N^+$, Kosten/Nutzen $c_i \in \N^+$, 
+Limit/Kapazität $b \in \N^+$, wo $i \in \{ 1, \dots, n \} $. \\
 \textbf{Ausgabe:} Indexmenge $T \subseteq \{ 1, \dots, n \}$ s.t. $\sum_{i \in T } \leq b$ \\
 \textbf{Kosten:} $cost(T, I) = \sum_{i \in T} c_i$ \\
 \textbf{Ziel:} $\max$
 
-\paragraph{Lösung mit Dynamischer Programmierung (Dyn-Prog-KP)} Wir iterieren über alle Teilprobleme $I_i$ und speichern die Tripel
+\paragraph{Lösung mit Dynamischer Programmierung (Dyn-Prog-KP)} 
+Wir iterieren über alle Teilprobleme $I_i$ und speichern die Tripel
 $(k, W_{i, k}, T_{i, k})$ = (Nutzen, Gewicht, Indexmenge), also Mengen $T_{i, k}$
 die exakt Nutzen $k$ mit minimalen Gewicht $W_{i, k}$ erreichen.
 In jeder Iteration behalte für jeden vorhandenen Nutzen ein Tripel mit minimalen Gewicht.
 Lese am Ende den maximal erreichten Nutzen $k^*$ (und sein $T_{n, k^*}$) aus.
 
-\paragraph{Laufzeit} \[\bigO \big( |I|^2 \cdot \text{max-int}(I) \big)\] da der Algorithmus $|I|$ Iterationen durchläuft und
+\paragraph{Laufzeit} \[\bigO \big( |I|^2 \cdot \text{max-int}(I) \big)\] da der 
+Algorithmus $|I|$ Iterationen durchläuft und
 jeder Schritt in $\leq \sum_j^n c_j = |I| \cdot \text{max-int}(I)$ läuft.
 
-\paragraph{Verbesserung falls \(b \ll \sum_{j=i}^{n} c_j\):} Wir können den Algorithmus für Instzanzen verbessern, bei denen die Gewichtsschranke kleiner ist als die Summe aller Nutzen.
+\paragraph{Verbesserung falls \(b \ll \sum_{j=i}^{n} c_j\):}
+Wir können den Algorithmus für Instanzen verbessern, 
+bei denen die Gewichtsschranke kleiner ist als die Summe aller Nutzen.
 
-Im oben stehenden Algorithmus speichern wir uns ein Tripel für jeden möglichen Nutzen (es gibt \(\sum_{j=i}^{n} c_j\) solche Werte) das minimal Gewicht (und die jeweiligen Gegenstände), das diesen Nutzen erreicht. Da \(b \ll \sum_{j=i}^{n} c_j\) können wir die Logik des Algorithmus ``umkehren'' und stattdessen für jedes mögliche Gewicht den maximal erreichbaren Nutzen speichern. 
+Im oben stehenden Algorithmus speichern wir uns ein Tripel für jeden möglichen 
+Nutzen (es gibt \(\sum_{j=i}^{n} c_j\) solche Werte) das minimal Gewicht (und 
+die jeweiligen Gegenstände), das diesen Nutzen erreicht. Da \(b \ll \sum_{j=i}^{n} c_j\) 
+können wir die Logik des Algorithmus ``umkehren'' und stattdessen für jedes 
+mögliche Gewicht den maximal erreichbaren Nutzen speichern. 
 
-Die neue Laufzeit des neuen Algorithmus ist in \(\bigO \left (n \cdot b\right)\), wobei \(n \in \bigO(|I|)\) und \(b \in \bigO(\text{max-int}(I))\).
+Die neue Laufzeit des neuen Algorithmus ist in \(\bigO \left (n \cdot b\right)\), 
+wobei \(n \in \bigO(|I|)\) und \(b \in \bigO(\text{max-int}(I))\).
 
-\paragraph{Weitere Verbesserung} Wir können die zwei Ansätze kombinieren für Probleme bei denen \(b \gg \sum_{j=i}^{n} c_j\), wobei allerdings nur wenig Objekte die Summe stark beeinflussen. Also wir nehmen an es gibt ein \(i \ll n\), sodass \(b \gg \sum_{j=i}^{n - i} c_j\) und \(b \ll \sum_{j=i}^{n} c_j\).
+\paragraph{Weitere Verbesserung} Wir können die zwei Ansätze kombinieren für 
+Probleme bei denen \(b \gg \sum_{j=i}^{n} c_j\), wobei allerdings nur wenig 
+Objekte die Summe stark beeinflussen. Also wir nehmen an es gibt ein \(i \ll n\), 
+sodass \(b \gg \sum_{j=i}^{n - i} c_j\) und \(b \ll \sum_{j=i}^{n} c_j\).
 
-Hierfür unterteilen wir das Problem in zwei Teilprobleme, eines, was nur die ``leichten'' Objekte enthält und eines welches nur die ``schwere'' Objekte beinhaltet. Wir rufen den ursprünglichen Algorithmus auf der ``leichten Instanz''\footnote{Leichte Instanz im Sinne von Gewicht, nicht Komplexität} auf und die oben beschriebene Verbesserung auf die ``schwere Instanz''. Wir können die beiden Lösungen nun kombinieren, indem wir für jede Lösung des einen Problems, die best mögliche Lösung aus dem anderen Problem suchen. Die Lösung ist die Kombination mit dem höchsten Gesamtnutzen.
+Hierfür unterteilen wir das Problem in zwei Teilprobleme, eines, was nur die 
+``leichten'' Objekte enthält und eines welches nur die ``schwere'' Objekte beinhaltet. 
+Wir rufen den ursprünglichen Algorithmus auf der ``leichten Instanz''\footnote{Leichte 
+Instanz im Sinne von Gewicht, nicht Komplexität} auf und die oben beschriebene 
+Verbesserung auf die ``schwere Instanz''. Wir können die beiden Lösungen nun kombinieren, 
+indem wir für jede Lösung des einen Problems, die best mögliche Lösung aus dem anderen 
+Problem suchen. Die Lösung ist die Kombination mit dem höchsten Gesamtnutzen.
 
 Die Laufzeit des Algorithmus ist in
 \[\bigO\left(n \cdot \sum_{j = 1}^{n-i} + i \cdot b \right).\]
