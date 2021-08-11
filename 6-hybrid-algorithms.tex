@@ -115,7 +115,7 @@ Sei $E_1 = \{e \in E \st c(e) = 1 \}$. Sei $G_1=(V,E_1)$.
 Sei $\varepsilon > 0$.
 \\
 Dann existiert ein Polynomzeit-Algorithmus $\A$, der entweder eine $(1+\varepsilon)$-Approximation für (1,2)-TSP auf $G$,
-oder eine $(1+\varepsilon)$-Approximation für IS auf $G_1$ berechnet.
+oder eine $(1/\varepsilon)$-Approximation für IS auf $G_1$ berechnet.
 
 \underline{Beweis:}
 Idee: Konstruiere einen Hamiltonpfad der Länge $L$ in $G$ und ein IS der Grösse $I$ in $G_1$ so dass gilt: $L-I \leq n-2$.
@@ -153,5 +153,5 @@ Falls: $L \leq (1+\varepsilon) \cdot n$
 $\implies$ $(1+\varepsilon)$-Approximation für (1,2)-TSP.
 \\
 Sonst: $I \geq L - n+2 \geq \underbrace{(1+\varepsilon) \cdot n}_{\leq L} - n+2 = \varepsilon n + 2 \geq \varepsilon n$
-$\implies$ $(1+\varepsilon)$-Approximation für IS.
+$\implies$ $(1/\varepsilon)$-Approximation für IS.
 
