@@ -185,7 +185,7 @@ Bekannterweise NP-schwer.
 
 \underline{Theorem:}
 Graph $G$ besteht aus disjunkten Cliquen \\
-$\iff$ $G$ enthält \emph{keinen} Pfad aus drei Knoten\footnote{In eine Clique bilden drei Knoten einen Kreis, keinen Pfad.}\\
+$\iff$ $G$ enthält \emph{keinen} Pfad aus drei Knoten\footnote{In einer Clique bilden drei Knoten einen Kreis, keinen Pfad.}\\
 $\iff$ es gibt \emph{keine} paarweise verschiedenen $u, v, w \in V : \{u,v\}, \{v,w\} \in E \wedge \{u,w\} \notin E$
 
 \begin{figure}[h]
@@ -202,7 +202,7 @@ Rekursiere auf
 $G_1 = \big(V, E   -  \{ \{u,v\} \} \big)$,
 $G_2 = \big(V, E   -  \{ \{v,w\} \} \big)$,
 $G_3 = \big(V, E \cup \{ \{u,w\} \} \big)$.
-Laufzeit\footnote{Die Rekursionsformel $T(k) = 3 \cdot T(k-1)$ gibt $\bigO (3^k)$ rekursive Aufrufe.}:
+Laufzeit\footnote{Die Rekursionsformel $T(k) = 3 \cdot T(k-1)$ ergibt $\bigO (3^k)$ rekursive Aufrufe.}:
 $\bigO (n^3 \cdot 3^k)$.
 
 
@@ -351,7 +351,8 @@ Sei $G$ ein Graph, sei $\B = \{B_1, \dots, B_k\}$ mit $B_i \subseteq V$
 Wir sagen dass $B_i, B_j$ sich \emph{berühren (touch)}, falls
 $B_i \cap B_j \neq \emptyset$ oder $\exists \{x_i, x_j\} \in E : x_i \in B_i \wedge x_j \in B_j$.
 \\
-Wenn alle $B_i$ sich paarweise berühren, dann heisst $\B$ \emph{bramble} (``Dornen-/Brombeergestrüpp'') von $G$.
+Wenn alle $B_i$ a) zusammenhängend sind und b) sich paarweise berühren,
+dann heisst $\B$ \emph{bramble} (``Dornen-/Brombeergestrüpp'') von $G$.
 
 $C \subseteq V$ heisst \emph{Überdeckung (cover)} von $\B$, falls $C \cap B_i \neq \emptyset$ für alle $i$.
 \\
@@ -369,6 +370,10 @@ und jede Reihe und jede Spalte ist eine Überdeckung von $\B$.
     \item Sei $G$ ein Graph. Dann gilt $\bn(G) = \tw(G) + 1$. \\
     $\longrightarrow$ Die bramble number beschreibt die Grösse des grössten bags in einer optimalen Baumzerlegung.
     D.h. sie bietet eine untere Schranke für die Weite einer beliebigen Baumzerlegung.
+
+    \underline{Baumweite eines Graphen zeigen:}
+    von oben Abschätzen durch Angabe einer konkreten Baumzerlegung und deren Weite,
+    von unten Abschätzen durch Angabe eines konkreten brambles und dessen Ordnung.
     \item Die Konstruktion einer Baumzerlegung und Bestimmung der Baumweite sind NP-schwer. \\
     $\longrightarrow$ Problem: das Parameter eines parametrisierten Algorithmus' sollte in Polynomzeit berechenbar sein!
     \item Sei $G$ ein Graph mit $\tw(G)=k$. Dann kann man eine Baumzerlegung $D$ der Grösse/Weite $\leq 5k$
@@ -381,7 +386,8 @@ und jede Reihe und jede Spalte ist eine Überdeckung von $\B$.
 Löse VCP in den bags und setze die Gesamtlösung aus den Teillösungen anhand der Baumstruktur bottom-up zusammen.
 
 \paragraph{Definition}
-Eine Baumzerlegung heisst \emph{einfach (simple)}, falls $\forall i, j \in I \cl X_i \nsubseteq X_j$.
+Eine Baumzerlegung heisst \emph{einfach (simple)}, falls
+$\forall i, j \in I \cl X_i \nsubseteq X_j \wedge X_j \nsubseteq X_i$.
 
 \paragraph{Lemma}
 Jede Baumzerlegung lässt sich umwandeln in eine einfache Baumzerlegung.

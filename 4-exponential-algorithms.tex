@@ -32,10 +32,18 @@ Annahme: O.B.d.A. hat jede Klausel Literale von paarweise verschiedenen Variable
 paarweise verschieden, dank polynomiellem preprocessing.
 Dann gilt $|\Phi| \in \bigO(n^3)$.
 
-\paragraph{Notation}
+\paragraph{Belegungen}
 Sei $\Phi$ eine Formel in 3-KNF über Variablen $X$, sei $x \in X$, $\alpha \in \setzeroone$.
 $\Phi[x=\alpha]$ beschreibt die Formel in 3-KNF, die aus $\Phi$ entsteht indem man den Wert $x=\alpha$ einsetzt
 und vereinfacht.
+Fälle der Vereinfachung:
+1) Klausel erfüllt und fällt weg.
+2) Klausel noch nicht erfüllt, belegtes Literal fällt weg.
+3) Falls Klausel nach 2) leer, ist $\Phi$ unerfülltbar.
+
+Eine (partielle) Belegung $\sigma : X \mapsto \setzeroone$ heisst \emph{autark}, falls für alle Klauseln $C_i$ gilt:
+entweder $\sigma$ erfüllt $C_i$, oder $C_i$ enthält keine Variablen aus $\sigma$.
+Auch gilt: $\Phi$ erfüllbar $\iff$ $\Phi[\sigma]$ erfüllbar.
 
 \paragraph{Trivialer Ansatz}
 Wähle eine Variable $x$, berechne $\Phi[x=0]$ und $\Phi[x=1]$,
@@ -218,7 +226,7 @@ Falls $\A$ mehrere branching rules verwendet, schätze jede Regel einzeln ab und
     \item $ \alpha(k_1, \dots, k_l) = \alpha(k_{i_1}, \dots, k_{i_l}) $ für jede Permutation $(i_1, \dots, i_l)$
     von $(1, \dots, l)$.
     \item $ \alpha(k_1, k_2, \dots, k_l) > \alpha(k_1', k_2, \dots, k_l)$ für jedes $k_1' > k_1$
-    \item $ \alpha(k_1, k_2) > \alpha(k_1+s, k_2-s)$
+    \item $ \alpha(k_1, k_2) > \alpha(k_1+s, k_2-s)$ für $0 \leq s \leq k_2 - k_1$
 \end{enumerate}
 Intuitiv: Der branching factor wird kleiner wenn ein Element des branching vectors grösser wird,
 oder wenn der Vektor ``balancierter'' wird.
